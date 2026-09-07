@@ -1,5 +1,7 @@
 # Triad Trainer
 
+![C major walked up the neck on strings 4-3-2: first inversion at the nut, second inversion at the fifth fret, root position at the tenth, then first inversion again an octave up](docs/positions.gif)
+
 Guitar triad drill. It hands you a chord on a string set, chosen from whatever
 you have practised least, and the metronome walks you through every inversion
 of it from the lowest position on the neck to the highest, a bar to each shape,
