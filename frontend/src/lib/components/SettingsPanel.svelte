@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SHOW_ROOT_PICKER } from '../config';
+  import { SHOW_INVERSION_PICKER, SHOW_ROOT_PICKER } from '../config';
   import { INVERSIONS, NOTE_NAMES, QUALITIES, STRING_SETS } from '../music';
   import type { Trainer } from '../state/trainer.svelte';
   import SectionHeader from './SectionHeader.svelte';
@@ -38,7 +38,7 @@
 
     // Naming the keys outright while there are few of them, because a narrowed
     // selection is the easiest thing to forget behind a closed panel.
-    const roots = !SHOW_ROOT_PICKER || settings.roots.length === TOTAL_ROOTS
+    const roots = settings.roots.length === TOTAL_ROOTS
       ? 'all keys'
       : settings.roots.length === 0
         ? 'no keys'
@@ -46,7 +46,13 @@
           ? [...settings.roots].sort((a, b) => a - b).map((pc) => NOTE_NAMES[pc]).join(' ')
           : plural(settings.roots.length, 'key');
 
-    return [qualities, sets, inversions, roots].join(' · ');
+    // A filter with no control behind it can never differ, so saying so is noise.
+    return [
+      qualities,
+      sets,
+      ...(SHOW_INVERSION_PICKER ? [inversions] : []),
+      ...(SHOW_ROOT_PICKER ? [roots] : [])
+    ].join(' · ');
   });
 </script>
 
@@ -68,12 +74,14 @@
           selected={trainer.settings.sets}
           onToggle={trainer.toggleSet}
         />
-        <ToggleGroup
-          title="Inversions"
-          options={INVERSIONS}
-          selected={trainer.settings.inversions}
-          onToggle={trainer.toggleInversion}
-        />
+        {#if SHOW_INVERSION_PICKER}
+          <ToggleGroup
+            title="Inversions"
+            options={INVERSIONS}
+            selected={trainer.settings.inversions}
+            onToggle={trainer.toggleInversion}
+          />
+        {/if}
         {#if SHOW_ROOT_PICKER}
           <ToggleGroup
             title="Keys"

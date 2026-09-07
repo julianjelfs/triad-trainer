@@ -50,6 +50,9 @@ export const INVERSIONS: { value: Inversion; label: string }[] = [
   { value: 'second', label: 'Second inversion' }
 ];
 
+/** Every inversion, in the order they are offered. */
+export const ALL_INVERSIONS: Inversion[] = INVERSIONS.map((inversion) => inversion.value);
+
 /** Which chord tone lands on each string, lowest-pitched string first. */
 const TONE_ORDER: Record<Inversion, ChordTone[]> = {
   root: ['root', 'third', 'fifth'],

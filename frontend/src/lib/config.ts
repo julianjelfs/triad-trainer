@@ -13,3 +13,12 @@
  * less than it cost. When off, the trainer holds all twelve open instead.
  */
 export const SHOW_ROOT_PICKER = true;
+
+/**
+ * The three inversion buttons.
+ *
+ * Off. Learning to move between all three is the point of the drill, so a run
+ * with one of them missing is not a smaller version of the exercise, it is a
+ * different and stranger one. When off, the trainer holds all three open.
+ */
+export const SHOW_INVERSION_PICKER = false;

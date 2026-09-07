@@ -7,14 +7,21 @@
  * at a time, wrapping back to the bottom, until you stop it.
  */
 import { ApiError, api } from '../api';
-import { SHOW_ROOT_PICKER } from '../config';
-import { ALL_ROOTS, buildDrill } from '../music';
+import { SHOW_INVERSION_PICKER, SHOW_ROOT_PICKER } from '../config';
+import { ALL_INVERSIONS, ALL_ROOTS, buildDrill } from '../music';
 import type { Drill, PracticeStats, Quality, Settings, TriadItem } from '../types';
 import type { Inversion } from '../types';
 
 const SAVE_DEBOUNCE_MS = 300;
 
-const NOTHING_SELECTED = 'Tick at least one quality, string set, inversion and key above.';
+/** Only name the filters you can actually see and change. */
+const NOTHING_SELECTED = (() => {
+  const parts = ['quality', 'string set'];
+  if (SHOW_INVERSION_PICKER) parts.push('inversion');
+  if (SHOW_ROOT_PICKER) parts.push('key');
+  const last = parts.pop();
+  return `Tick at least one ${parts.join(', ')} and ${last} above.`;
+})();
 
 export class Trainer {
   settings = $state<Settings | null>(null);
@@ -40,7 +47,7 @@ export class Trainer {
       this.settings = settings;
       this.showLabels = settings.show_labels;
       this.stats = stats;
-      this.#openEveryRoot();
+      this.#openHiddenChoices();
     } catch {
       this.notice = 'Could not reach the backend — is it running on port 8000?';
       return;
@@ -136,14 +143,23 @@ export class Trainer {
   }
 
   /**
-   * Nothing can switch a root back on while the picker is hidden, so a stored
-   * subset would quietly stick. Widen it back out on load instead.
+   * A hidden picker cannot switch its options back on, so a stored subset would
+   * quietly stick forever. Widen anything that is off screen back out on load.
    */
-  #openEveryRoot() {
-    if (SHOW_ROOT_PICKER || !this.settings) return;
-    if (this.settings.roots.length === ALL_ROOTS.length) return;
-    this.settings.roots = [...ALL_ROOTS];
-    this.#scheduleSave();
+  #openHiddenChoices() {
+    if (!this.settings) return;
+    let widened = false;
+
+    if (!SHOW_ROOT_PICKER && this.settings.roots.length !== ALL_ROOTS.length) {
+      this.settings.roots = [...ALL_ROOTS];
+      widened = true;
+    }
+    if (!SHOW_INVERSION_PICKER && this.settings.inversions.length !== ALL_INVERSIONS.length) {
+      this.settings.inversions = [...ALL_INVERSIONS];
+      widened = true;
+    }
+
+    if (widened) this.#scheduleSave();
   }
 
   async #flush() {
