@@ -1,5 +1,5 @@
 <script lang="ts" generics="T extends string | number">
-  import CheckRow from './CheckRow.svelte';
+  import ToggleButton from './ToggleButton.svelte';
 
   interface Option {
     value: T;
@@ -11,21 +11,22 @@
     options: Option[];
     selected: T[];
     onToggle: (value: T, on: boolean) => void;
-    /** Lay the rows out across the width instead of down a column. */
-    wrap?: boolean;
+    /** Equal widths, for rows of short labels like the twelve keys. */
+    fixedWidth?: boolean;
   }
 
-  let { title, options, selected, onToggle, wrap = false }: Props = $props();
+  let { title, options, selected, onToggle, fixedWidth = false }: Props = $props();
 </script>
 
 <div class="group">
   <div class="kicker">{title}</div>
-  <div class="rows" class:wrap>
+  <div class="options">
     {#each options as option (option.value)}
-      <CheckRow
+      <ToggleButton
         label={option.label}
-        checked={selected.includes(option.value)}
+        pressed={selected.includes(option.value)}
         onToggle={(on) => onToggle(option.value, on)}
+        {fixedWidth}
       />
     {/each}
   </div>
@@ -36,20 +37,9 @@
     margin-bottom: 12px;
   }
 
-  .rows {
+  .options {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .rows.wrap {
-    flex-direction: row;
     flex-wrap: wrap;
-    gap: 8px 20px;
-  }
-
-  /* Even columns, so the twelve keys line up rather than ragging. */
-  .rows.wrap :global(.row) {
-    width: 52px;
+    gap: 10px;
   }
 </style>

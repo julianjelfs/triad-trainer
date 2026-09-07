@@ -2,8 +2,8 @@
   import { SHOW_ROOT_PICKER } from '../config';
   import { INVERSIONS, NOTE_NAMES, QUALITIES, STRING_SETS } from '../music';
   import type { Trainer } from '../state/trainer.svelte';
-  import CheckGroup from './CheckGroup.svelte';
   import SectionHeader from './SectionHeader.svelte';
+  import ToggleGroup from './ToggleGroup.svelte';
 
   let { trainer }: { trainer: Trainer } = $props();
 
@@ -56,37 +56,34 @@
 
     {#if open}
       <div class="groups">
-        <CheckGroup
+        <ToggleGroup
           title="Quality"
           options={QUALITIES}
           selected={trainer.settings.qualities}
           onToggle={trainer.toggleQuality}
         />
-        <CheckGroup
+        <ToggleGroup
           title="String sets"
           options={setOptions}
           selected={trainer.settings.sets}
           onToggle={trainer.toggleSet}
         />
-        <CheckGroup
+        <ToggleGroup
           title="Inversions"
           options={INVERSIONS}
           selected={trainer.settings.inversions}
           onToggle={trainer.toggleInversion}
         />
-      </div>
-
-      {#if SHOW_ROOT_PICKER}
-        <div class="keys">
-          <CheckGroup
+        {#if SHOW_ROOT_PICKER}
+          <ToggleGroup
             title="Keys"
             options={rootOptions}
             selected={trainer.settings.roots}
             onToggle={trainer.toggleRoot}
-            wrap
+            fixedWidth
           />
-        </div>
-      {/if}
+        {/if}
+      </div>
     {/if}
   </section>
 {/if}
@@ -96,15 +93,12 @@
     padding: 22px 0;
   }
 
+  /* Stacked full-width rows rather than columns: the buttons are wide enough
+     that columns would wrap them awkwardly, and each row reads as one filter. */
   .groups {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-    gap: 28px;
-    padding: 24px 0 4px;
-  }
-
-  /* Full width under the columns: twelve keys read as a row, not a column. */
-  .keys {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
     padding: 24px 0 4px;
   }
 </style>
