@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# Control the always-on Triad Trainer service.
+set -euo pipefail
+
+LABEL="com.julian.triad-trainer"
+DOMAIN="gui/$(id -u)"
+PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
+LOG="$HOME/Library/Logs/triad-trainer.log"
+PORT=8000
+SERVE_PORT=8443
+ROOT="$(cd "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")/.." && pwd)"
+
+url() {
+  local name
+  name="$(tailscale status --json 2>/dev/null | sed -n 's/.*"DNSName": *"\([^"]*\)\..*/\1/p' | head -1)"
+  if [ -n "$name" ] && tailscale serve status 2>/dev/null | grep -q ":$SERVE_PORT"; then
+    echo "https://$name:$SERVE_PORT"
+  else
+    echo "http://127.0.0.1:$PORT"
+  fi
+}
+
+running() { launchctl print "$DOMAIN/$LABEL" >/dev/null 2>&1; }
+
+case "${1:-open}" in
+  open)    open "$(url)" ;;
+  url)     url ;;
+  start)   launchctl bootstrap "$DOMAIN" "$PLIST" 2>/dev/null || launchctl kickstart "$DOMAIN/$LABEL"; echo "started" ;;
+  stop)    launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true; echo "stopped" ;;
+  restart) launchctl kickstart -k "$DOMAIN/$LABEL"; echo "restarted" ;;
+  logs)    tail -n "${2:-40}" -f "$LOG" ;;
+  rebuild)
+    echo "building frontend..."
+    (cd "$ROOT/frontend" && npm run build)
+    echo "done — reload the page, no restart needed"
+    ;;
+  serve)
+    if tailscale serve status 2>/dev/null | grep -q ":$SERVE_PORT"; then
+      echo "already served on :$SERVE_PORT"; exit 0
+    fi
+    # Without TLS certs enabled for the tailnet this hangs silently rather than
+    # failing, so give it a deadline and report the real reason.
+    tailscale serve --bg --https=$SERVE_PORT "$PORT" >/dev/null 2>&1 &
+    serve_pid=$!
+    for _ in $(seq 1 20); do
+      tailscale serve status 2>/dev/null | grep -q ":$SERVE_PORT" && break
+      sleep 0.5
+    done
+    if tailscale serve status 2>/dev/null | grep -q ":$SERVE_PORT"; then
+      echo "published at $(url)"
+    else
+      kill "$serve_pid" 2>/dev/null || true
+      echo "could not publish to the tailnet."
+      echo
+      echo "  $(tailscale cert --cert-file /dev/null --key-file /dev/null \
+            "$(tailscale status --json 2>/dev/null | sed -n 's/.*"DNSName": *"\([^"]*\)\..*/\1/p' | head -1)" 2>&1 | tail -1)"
+      echo
+      echo "  If that says TLS certs are unsupported, enable HTTPS for your"
+      echo "  tailnet: admin console -> DNS -> HTTPS Certificates -> Enable."
+      echo "  Then run: triad-trainer serve"
+      exit 1
+    fi
+    ;;
+  unserve)
+    tailscale serve --https=$SERVE_PORT off 2>/dev/null || tailscale serve reset
+    echo "removed from the tailnet"
+    ;;
+  status)
+    if running; then
+      pid="$(launchctl print "$DOMAIN/$LABEL" | sed -n 's/^[[:space:]]*pid = \([0-9]*\).*/\1/p')"
+      echo "service : running${pid:+ (pid $pid)}"
+    else
+      echo "service : not running"
+    fi
+    if curl -sf -m 2 "http://127.0.0.1:$PORT/api/health" >/dev/null; then
+      echo "api     : responding on 127.0.0.1:$PORT"
+    else
+      echo "api     : not responding on 127.0.0.1:$PORT"
+    fi
+    echo "tailnet : $(tailscale serve status 2>/dev/null | grep -q ":$SERVE_PORT" && echo "served on $SERVE_PORT" || echo "not served")"
+    echo "url     : $(url)"
+    ;;
+  *)
+    cat <<USAGE
+triad-trainer — guitar triad drill
+
+  triad-trainer            open it in a browser
+  triad-trainer status     is it running, and where
+  triad-trainer url        print the URL
+  triad-trainer rebuild    rebuild the UI after changing code
+  triad-trainer serve      publish to your tailnet over HTTPS
+  triad-trainer unserve    remove it from your tailnet
+  triad-trainer logs [n]   follow the log
+  triad-trainer start|stop|restart
+USAGE
+    ;;
+esac

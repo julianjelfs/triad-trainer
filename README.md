@@ -55,5 +55,31 @@ Then, to run:
 
 Open <http://localhost:5173>. Ctrl-C stops both halves.
 
+## Having it always there
+
+To stop thinking about starting it:
+
+```sh
+./scripts/install-service.sh
+```
+
+That builds the frontend, has the API serve it so the whole thing is one
+process on one port, installs a launchd agent that starts it at login and
+restarts it if it dies, and puts a `triad-trainer` command on your PATH.
+
+```sh
+triad-trainer            # open it
+triad-trainer status     # running? reachable where?
+triad-trainer rebuild    # after changing code
+triad-trainer logs
+```
+
+To reach it from your other machines, `triad-trainer serve` publishes it to
+your tailnet over HTTPS at `https://<this-machine>.<tailnet>.ts.net:8443`. It
+stays bound to loopback; Tailscale does the proxying, and nothing is exposed to
+the public internet. HTTPS has to be enabled for your tailnet first, under DNS
+in the admin console — without it the microphone is blocked on every machine
+but this one, so voice stepping would not work remotely.
+
 Your practice history lives in `backend/triads.db`, on this machine and nowhere
 else. Deleting that file resets the log and nothing else.
