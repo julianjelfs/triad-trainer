@@ -47,10 +47,29 @@ def ui_directory() -> Path:
     return Path(override) if override else DEFAULT_UI_DIR
 
 
+class UiFiles(StaticFiles):
+    """Static files with cache headers that survive a rebuild.
+
+    Vite fingerprints asset filenames, so those can be cached forever. The
+    entry HTML names them, so it must be revalidated every time: a cached
+    index.html pins a browser to an old bundle, and on a device you rarely
+    hard-refresh it stays pinned indefinitely.
+    """
+
+    def file_response(self, *args, **kwargs):
+        response = super().file_response(*args, **kwargs)
+        path = str(args[0]) if args else ""
+        if path.endswith(".html"):
+            response.headers["Cache-Control"] = "no-cache"
+        else:
+            response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        return response
+
+
 # Serve the built frontend from the API itself, so the installed app is one
 # process on one port and the browser has a single origin to deal with. Mounted
 # last so every /api route above still wins. Missing in a source checkout that
 # has not been built yet, which is fine: run the Vite dev server instead.
 _ui = ui_directory()
 if _ui.is_dir():
-    app.mount("/", StaticFiles(directory=_ui, html=True), name="ui")
+    app.mount("/", UiFiles(directory=_ui, html=True), name="ui")

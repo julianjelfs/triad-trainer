@@ -52,6 +52,18 @@ function recognitionConstructor(): RecognitionConstructor | null {
 /** The word that advances a position. Add to the pattern to add vocabulary. */
 const COMMAND = /\bnext\b/;
 
+/**
+ * How long to ignore a repeat of the same word.
+ *
+ * One spoken "next" arrives several times: as interim results firming up, and
+ * again as the final result. Android Chrome also ignores `continuous` and ends
+ * the session after every utterance, so those repeats can straddle a restart
+ * and arrive with the same result index twice over. Indices reset across that
+ * boundary and cannot be used to tell a repeat from a new word; elapsed time
+ * can. Comfortably shorter than any deliberate repeat while playing.
+ */
+const REPEAT_COOLDOWN_MS = 1000;
+
 export class VoiceCommands {
   readonly supported = recognitionConstructor() !== null;
 
@@ -62,8 +74,8 @@ export class VoiceCommands {
   #recognition: SpeechRecognition | null = null;
   /** True between start() and stop(), so an auto-ended session can be resumed. */
   #wanted = false;
-  /** Highest result index already acted on, so one utterance fires once. */
-  #firedFor = -1;
+  /** When the last command fired. One guard, so nothing can mask it. */
+  #lastFiredAt = 0;
 
   constructor(private onCommand: () => void) {}
 
@@ -84,10 +96,13 @@ export class VoiceCommands {
 
     recognition.onresult = (event) => {
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        if (i <= this.#firedFor) continue;
         if (!COMMAND.test(event.results[i][0].transcript.toLowerCase())) continue;
-        this.#firedFor = i;
+
+        const now = Date.now();
+        if (now - this.#lastFiredAt < REPEAT_COOLDOWN_MS) return;
+        this.#lastFiredAt = now;
         this.onCommand();
+        return;
       }
     };
 
@@ -104,7 +119,6 @@ export class VoiceCommands {
     // Chrome ends a session on its own every so often; pick it straight back up.
     recognition.onend = () => {
       if (!this.#wanted) return;
-      this.#firedFor = -1;
       try {
         recognition.start();
       } catch {
@@ -114,7 +128,7 @@ export class VoiceCommands {
 
     this.#recognition = recognition;
     this.#wanted = true;
-    this.#firedFor = -1;
+    this.#lastFiredAt = 0;
     this.error = '';
 
     try {

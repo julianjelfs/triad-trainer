@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { VoiceCommands } from './voice.svelte';
 
 /** Stands in for the browser's SpeechRecognition so no microphone is involved. */
@@ -45,7 +45,13 @@ function install() {
   (globalThis as { window?: unknown }).window = { SpeechRecognition: FakeRecognition };
 }
 
+beforeEach(() => {
+  vi.useFakeTimers();
+  vi.setSystemTime(new Date('2026-09-07T12:00:00Z'));
+});
+
 afterEach(() => {
+  vi.useRealTimers();
   delete (globalThis as { window?: unknown }).window;
   FakeRecognition.last = null;
 });
@@ -117,6 +123,48 @@ describe('VoiceCommands', () => {
     expect(recognition.started).toBe(1);
     expect(recognition.aborted).toBe(1);
     expect(voice.listening).toBe(false);
+  });
+
+  it('fires once when a session ends between the interim and final result', () => {
+    // Android Chrome ignores `continuous`, so it ends the session after every
+    // utterance and the final result lands in a fresh session at index 0. An
+    // index-based guard resets across that boundary and fires twice.
+    install();
+    const onCommand = vi.fn();
+    const voice = new VoiceCommands(onCommand);
+    voice.start();
+
+    FakeRecognition.last!.say(['next']);        // interim, session A
+    FakeRecognition.last!.onend?.();            // session A ends, restarts
+    FakeRecognition.last!.say(['next']);        // final for the same word
+
+    expect(onCommand).toHaveBeenCalledTimes(1);
+  });
+
+  it('still allows a deliberate second "next" a moment later', () => {
+    install();
+    const onCommand = vi.fn();
+    const voice = new VoiceCommands(onCommand);
+    voice.start();
+
+    FakeRecognition.last!.say(['next']);
+    vi.setSystemTime(Date.now() + 1500);
+    FakeRecognition.last!.say(['next', 'next'], 1);
+
+    expect(onCommand).toHaveBeenCalledTimes(2);
+  });
+
+  it('fires again at the same result index once the cooldown has passed', () => {
+    install();
+    const onCommand = vi.fn();
+    const voice = new VoiceCommands(onCommand);
+    voice.start();
+
+    FakeRecognition.last!.say(['next']);
+    vi.setSystemTime(Date.now() + 1500);
+    FakeRecognition.last!.say(['next']);   // same index, new utterance
+
+    expect(onCommand).toHaveBeenCalledTimes(2);
   });
 
   it('explains a blocked microphone and gives up', () => {
