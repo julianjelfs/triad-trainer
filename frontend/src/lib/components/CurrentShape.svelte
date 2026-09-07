@@ -17,10 +17,12 @@
 
   let shape = $derived(trainer.shape);
 
-  /** Every position except the one you are on, for the faint outlines. */
-  let ghosts = $derived(
-    (trainer.drill?.positions ?? []).filter((_, index) => index !== trainer.positionIndex)
-  );
+  /**
+   * Every position, the current one included. Leaving it out would make its
+   * ghost vanish at the moment the solid dots slide onto it, which reads as a
+   * flicker; with the layer constant, the shape simply lands on its own ghost.
+   */
+  let ghosts = $derived(trainer.drill?.positions ?? []);
 
   /**
    * Both buttons move you to a different chord, so both stop the count first

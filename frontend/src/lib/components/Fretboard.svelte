@@ -5,7 +5,11 @@
   interface Props {
     shape: Shape;
     showLabels: boolean;
-    /** The drill's other positions, drawn faintly behind the current one. */
+    /**
+     * Every position in the drill, drawn faintly behind the neck. Includes the
+     * current one, which is drawn again solid on top, so the faint layer never
+     * changes as you step and nothing appears or disappears under the move.
+     */
     ghosts?: Shape[];
     /** Index of the string the metronome is calling, or -1 when it is stopped. */
     activeString?: number;
@@ -47,7 +51,7 @@
   /** Rows run top to bottom, so the highest-pitched string is drawn first. */
   let stringLabels = $derived([...STRING_SETS[shape.item.string_set].names].reverse());
 
-  // Where the rest of the drill sits, so the shape you are on has context.
+  // Where the whole drill sits, so the shape you are on has context.
   let ghostDots = $derived(
     ghosts.flatMap((position, positionIndex) =>
       position.frets.map((fret, stringIndex) => ({
