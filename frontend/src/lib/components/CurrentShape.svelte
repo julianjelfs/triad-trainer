@@ -17,6 +17,11 @@
 
   let shape = $derived(trainer.shape);
 
+  /** Every position except the one you are on, for the faint outlines. */
+  let ghosts = $derived(
+    (trainer.drill?.positions ?? []).filter((_, index) => index !== trainer.positionIndex)
+  );
+
   /**
    * Both buttons move you to a different chord, so both stop the count first
    * rather than leaving it ticking against a shape you are no longer on.
@@ -45,7 +50,12 @@
     </div>
 
     <div class="diagram">
-      <Fretboard {shape} showLabels={trainer.showLabels} activeString={metronome.beat} />
+      <Fretboard
+        {shape}
+        {ghosts}
+        showLabels={trainer.showLabels}
+        activeString={metronome.beat}
+      />
     </div>
 
     <div class="controls">

@@ -5,6 +5,8 @@
   interface Props {
     shape: Shape;
     showLabels: boolean;
+    /** The drill's other positions, drawn faintly behind the current one. */
+    ghosts?: Shape[];
     /** Index of the string the metronome is calling, or -1 when it is stopped. */
     activeString?: number;
     /** Right edge of the neck. Fixed for every drill so shapes visibly climb it. */
@@ -15,6 +17,7 @@
   let {
     shape,
     showLabels,
+    ghosts = [],
     activeString = -1,
     highestFret = MAX_FRET,
     showInlays = true
@@ -43,6 +46,17 @@
 
   /** Rows run top to bottom, so the highest-pitched string is drawn first. */
   let stringLabels = $derived([...STRING_SETS[shape.item.string_set].names].reverse());
+
+  // Where the rest of the drill sits, so the shape you are on has context.
+  let ghostDots = $derived(
+    ghosts.flatMap((position, positionIndex) =>
+      position.frets.map((fret, stringIndex) => ({
+        key: `${positionIndex}-${stringIndex}-${fret}`,
+        x: fret === 0 ? PAD_LEFT + 2 : spaceCentre(fret),
+        y: rowY(2 - stringIndex)
+      }))
+    )
+  );
 
   let dots = $derived(
     shape.frets.map((fret, stringIndex) => {
@@ -93,6 +107,10 @@
   {#each stringLabels as label, row (row)}
     <line class="string" x1={PAD_LEFT} x2={PAD_LEFT + gridWidth} y1={rowY(row)} y2={rowY(row)} />
     <text class="string-name" x={PAD_LEFT - 10} y={rowY(row)}>{label}</text>
+  {/each}
+
+  {#each ghostDots as ghost (ghost.key)}
+    <circle class="ghost" cx={ghost.x} cy={ghost.y} r={DOT_RADIUS} />
   {/each}
 
   {#each dots as dot (dot.stringIndex)}
@@ -150,6 +168,13 @@
   .string-name {
     text-anchor: end;
     dominant-baseline: middle;
+  }
+
+  /* Outline only, so strings and inlays still read through them. */
+  .ghost {
+    fill: none;
+    stroke: var(--color-neutral-400);
+    stroke-width: 1.5;
   }
 
   .note {
