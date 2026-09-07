@@ -170,11 +170,11 @@
     dominant-baseline: middle;
   }
 
-  /* Outline only, so strings and inlays still read through them. */
+  /* A wash rather than an outline: present enough to show the shape, faint
+     enough that the strings and fret numbers still read straight through. */
   .ghost {
-    fill: none;
-    stroke: var(--color-neutral-400);
-    stroke-width: 1.5;
+    fill: color-mix(in srgb, var(--color-text) 10%, transparent);
+    stroke: none;
   }
 
   .note {

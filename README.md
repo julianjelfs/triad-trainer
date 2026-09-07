@@ -17,8 +17,8 @@ not, which is the point.
 Three beats to a bar, one per note of the triad, and the shape changes on beat
 one. Say the note before you play it.
 
-The shape you are on is drawn solid. The drill's other positions are outlined
-faintly in place, so you can see the whole run up the neck and where you are
+The shape you are on is drawn solid. The drill's other positions sit behind it
+as faint discs, so you can see the whole run up the neck and where you are
 going next.
 
 The squares under the diagram step through the positions by hand, for getting
