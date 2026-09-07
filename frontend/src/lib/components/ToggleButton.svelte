@@ -10,9 +10,11 @@
     onToggle: (pressed: boolean) => void;
     /** Equal widths, for rows of short labels like the twelve keys. */
     fixedWidth?: boolean;
+    /** Smaller, for toggles that sit alongside the drill rather than in settings. */
+    small?: boolean;
   }
 
-  let { label, pressed, onToggle, fixedWidth = false }: Props = $props();
+  let { label, pressed, onToggle, fixedWidth = false, small = false }: Props = $props();
 </script>
 
 <button
@@ -20,6 +22,7 @@
   class="toggle"
   class:pressed
   class:fixed={fixedWidth}
+  class:small
   aria-pressed={pressed}
   onclick={() => onToggle(!pressed)}
 >
@@ -42,6 +45,12 @@
     line-height: 1;
     cursor: pointer;
     user-select: none;
+  }
+
+  .toggle.small {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 13px;
   }
 
   .toggle.fixed {

@@ -3,9 +3,9 @@
   import type { Metronome } from '../state/metronome.svelte';
   import type { Trainer } from '../state/trainer.svelte';
   import type { VoiceCommands } from '../state/voice.svelte';
-  import CheckRow from './CheckRow.svelte';
   import Fretboard from './Fretboard.svelte';
   import PositionDots from './PositionDots.svelte';
+  import ToggleButton from './ToggleButton.svelte';
 
   interface Props {
     trainer: Trainer;
@@ -64,21 +64,21 @@
       <PositionDots {trainer} />
       <div class="toggles">
         {#if voice.supported}
-          <div class="listen" class:live={voice.listening}>
-            <CheckRow
+          <div class="listen">
+            <ToggleButton
               label={'Listen for “next”'}
-              size={14}
-              checked={voice.listening}
+              pressed={voice.listening}
               onToggle={() => voice.toggle()}
+              small
             />
             {#if voice.listening}<span class="pip" aria-hidden="true"></span>{/if}
           </div>
         {/if}
-        <CheckRow
+        <ToggleButton
           label="Note names"
-          size={14}
-          checked={trainer.showLabels}
+          pressed={trainer.showLabels}
           onToggle={(on) => trainer.setShowLabels(on)}
+          small
         />
       </div>
     </div>
@@ -140,7 +140,8 @@
   .controls {
     display: flex;
     align-items: center;
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: 12px;
     margin: 14px 0 22px;
   }
 
@@ -155,10 +156,6 @@
     display: flex;
     align-items: center;
     gap: 8px;
-  }
-
-  .listen.live :global(.label) {
-    color: var(--color-accent);
   }
 
   /* A live mic should be visible without being read as an error. */
