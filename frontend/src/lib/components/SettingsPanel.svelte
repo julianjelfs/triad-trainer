@@ -14,6 +14,7 @@
 
   const TOTAL_SETS = STRING_SETS.length;
   const TOTAL_INVERSIONS = INVERSIONS.length;
+  const TOTAL_ROOTS = NOTE_NAMES.length;
 
   function plural(count: number, noun: string): string {
     return `${count} ${noun}${count === 1 ? '' : 's'}`;
@@ -35,7 +36,17 @@
         ? 'all inversions'
         : plural(settings.inversions.length, 'inversion');
 
-    return [qualities, sets, inversions].join(' · ');
+    // Naming the keys outright while there are few of them, because a narrowed
+    // selection is the easiest thing to forget behind a closed panel.
+    const roots = !SHOW_ROOT_PICKER || settings.roots.length === TOTAL_ROOTS
+      ? 'all keys'
+      : settings.roots.length === 0
+        ? 'no keys'
+        : settings.roots.length <= 4
+          ? [...settings.roots].sort((a, b) => a - b).map((pc) => NOTE_NAMES[pc]).join(' ')
+          : plural(settings.roots.length, 'key');
+
+    return [qualities, sets, inversions, roots].join(' · ');
   });
 </script>
 
@@ -63,15 +74,19 @@
           selected={trainer.settings.inversions}
           onToggle={trainer.toggleInversion}
         />
-        {#if SHOW_ROOT_PICKER}
+      </div>
+
+      {#if SHOW_ROOT_PICKER}
+        <div class="keys">
           <CheckGroup
-            title="Roots"
+            title="Keys"
             options={rootOptions}
             selected={trainer.settings.roots}
             onToggle={trainer.toggleRoot}
+            wrap
           />
-        {/if}
-      </div>
+        </div>
+      {/if}
     {/if}
   </section>
 {/if}
@@ -85,6 +100,11 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
     gap: 28px;
+    padding: 24px 0 4px;
+  }
+
+  /* Full width under the columns: twelve keys read as a row, not a column. */
+  .keys {
     padding: 24px 0 4px;
   }
 </style>

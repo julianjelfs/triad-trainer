@@ -7,10 +7,10 @@ you have practised least, and the metronome walks you through every inversion
 of it from the lowest position on the neck to the highest, a bar to each shape,
 wrapping back to the bottom until you stop.
 
-You do not choose the chord. You tick which qualities, string sets and
-inversions are in play, and it picks from those, leaning towards whatever you
-have been neglecting. Every key gets the same exposure whether you like it or
-not, which is the point.
+You do not choose the chord itself. You tick which qualities, string sets,
+inversions and keys are in play, and it picks from those, leaning towards
+whatever you have been neglecting. Narrow it to one key when you want to work
+on one; the practice log will show what that is costing the others.
 
 ## Using it
 

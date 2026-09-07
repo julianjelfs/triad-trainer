@@ -14,7 +14,7 @@ import type { Inversion } from '../types';
 
 const SAVE_DEBOUNCE_MS = 300;
 
-const NOTHING_SELECTED = 'Tick at least one quality, string set and inversion above.';
+const NOTHING_SELECTED = 'Tick at least one quality, string set, inversion and key above.';
 
 export class Trainer {
   settings = $state<Settings | null>(null);

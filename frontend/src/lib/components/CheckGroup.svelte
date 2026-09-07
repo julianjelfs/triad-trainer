@@ -11,14 +11,16 @@
     options: Option[];
     selected: T[];
     onToggle: (value: T, on: boolean) => void;
+    /** Lay the rows out across the width instead of down a column. */
+    wrap?: boolean;
   }
 
-  let { title, options, selected, onToggle }: Props = $props();
+  let { title, options, selected, onToggle, wrap = false }: Props = $props();
 </script>
 
 <div class="group">
   <div class="kicker">{title}</div>
-  <div class="rows">
+  <div class="rows" class:wrap>
     {#each options as option (option.value)}
       <CheckRow
         label={option.label}
@@ -38,5 +40,16 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
+  }
+
+  .rows.wrap {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+  }
+
+  /* Even columns, so the twelve keys line up rather than ragging. */
+  .rows.wrap :global(.row) {
+    width: 52px;
   }
 </style>
