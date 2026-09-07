@@ -97,6 +97,10 @@
     {/if}
   {/if}
 
+  {#each ghostDots as ghost (ghost.key)}
+    <circle class="ghost" cx={ghost.x} cy={ghost.y} r={DOT_RADIUS} />
+  {/each}
+
   {#each frets as fret (fret)}
     <line class="fret-wire" class:nut={fret === 0} x1={fretX(fret)} x2={fretX(fret)} y1="14" y2="128" />
     {#if fret > 0}
@@ -107,10 +111,6 @@
   {#each stringLabels as label, row (row)}
     <line class="string" x1={PAD_LEFT} x2={PAD_LEFT + gridWidth} y1={rowY(row)} y2={rowY(row)} />
     <text class="string-name" x={PAD_LEFT - 10} y={rowY(row)}>{label}</text>
-  {/each}
-
-  {#each ghostDots as ghost (ghost.key)}
-    <circle class="ghost" cx={ghost.x} cy={ghost.y} r={DOT_RADIUS} />
   {/each}
 
   {#each dots as dot (dot.stringIndex)}
@@ -170,8 +170,8 @@
     dominant-baseline: middle;
   }
 
-  /* A wash rather than an outline: present enough to show the shape, faint
-     enough that the strings and fret numbers still read straight through. */
+  /* A wash rather than an outline, drawn before the wires and strings so they
+     pass over it cleanly rather than being tinted by it. */
   .ghost {
     fill: color-mix(in srgb, var(--color-text) 10%, transparent);
     stroke: none;
