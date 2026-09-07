@@ -35,8 +35,15 @@ case "${1:-open}" in
     echo "done — reload the page, no restart needed"
     ;;
   serve)
+    # Config written while the tailnet had no TLS certs sticks around but never
+    # starts a listener, so trust a reply rather than the presence of config.
     if tailscale serve status 2>/dev/null | grep -q ":$SERVE_PORT"; then
-      echo "already served on :$SERVE_PORT"; exit 0
+      if curl -sf -m 8 "$(url)/api/health" >/dev/null 2>&1; then
+        echo "already served at $(url)"; exit 0
+      fi
+      echo "stale serve config, resetting..."
+      tailscale serve reset 2>/dev/null || true
+      sleep 1
     fi
     # Without TLS certs enabled for the tailnet this hangs silently rather than
     # failing, so give it a deadline and report the real reason.
@@ -77,7 +84,15 @@ case "${1:-open}" in
     else
       echo "api     : not responding on 127.0.0.1:$PORT"
     fi
-    echo "tailnet : $(tailscale serve status 2>/dev/null | grep -q ":$SERVE_PORT" && echo "served on $SERVE_PORT" || echo "not served")"
+    if tailscale serve status 2>/dev/null | grep -q ":$SERVE_PORT"; then
+      if curl -sf -m 8 "$(url)/api/health" >/dev/null 2>&1; then
+        echo "tailnet : reachable on :$SERVE_PORT"
+      else
+        echo "tailnet : configured on :$SERVE_PORT but not answering (try: triad-trainer serve)"
+      fi
+    else
+      echo "tailnet : not served"
+    fi
     echo "url     : $(url)"
     ;;
   *)
