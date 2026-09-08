@@ -57,6 +57,7 @@
         {ghosts}
         showLabels={trainer.showLabels}
         activeString={metronome.beat}
+        onSelect={(index) => trainer.showPosition(index)}
       />
     </div>
 

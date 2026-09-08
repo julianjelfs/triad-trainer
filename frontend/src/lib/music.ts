@@ -32,6 +32,9 @@ export interface StringSet {
   names: string[];
 }
 
+/** Every string, lowest-pitched first. The diagram always draws all six. */
+export const STRING_NAMES = ['low E', 'A', 'D', 'G', 'B', 'high E'];
+
 export const STRING_SETS: StringSet[] = [
   { indices: [0, 1, 2], label: 'Strings 6-5-4', names: ['low E', 'A', 'D'] },
   { indices: [1, 2, 3], label: 'Strings 5-4-3', names: ['A', 'D', 'G'] },
@@ -122,6 +125,12 @@ function shapeAt(item: TriadItem, frets: number[]): Shape {
 /** Lowest fret the shape reaches; what the cycle is ordered by. */
 export function shapePosition(shape: Shape): number {
   return Math.min(...shape.frets);
+}
+
+/** How a position is named wherever it can be picked: on the neck, or below it. */
+export function positionLabel(shape: Shape): string {
+  const fret = shapePosition(shape);
+  return `${inversionLabel(shape.item.inversion)}, ${fret === 0 ? 'open' : `fret ${fret}`}`;
 }
 
 /**

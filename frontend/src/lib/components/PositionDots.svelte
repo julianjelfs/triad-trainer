@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { inversionLabel, shapePosition } from '../music';
+  import { positionLabel } from '../music';
   import type { Trainer } from '../state/trainer.svelte';
 
   let { trainer }: { trainer: Trainer } = $props();
@@ -7,9 +7,7 @@
   let positions = $derived(trainer.drill?.positions ?? []);
 
   function label(index: number): string {
-    const shape = positions[index];
-    const fret = shapePosition(shape);
-    return `${inversionLabel(shape.item.inversion)}, ${fret === 0 ? 'open' : `fret ${fret}`}`;
+    return positionLabel(positions[index]);
   }
 </script>
 

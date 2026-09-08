@@ -1,5 +1,11 @@
 <script lang="ts">
-  import { MAX_FRET, STRING_SETS, noteName } from "../music";
+  import {
+    MAX_FRET,
+    STRING_NAMES,
+    STRING_SETS,
+    noteName,
+    positionLabel,
+  } from "../music";
   import type { Shape } from "../types";
 
   interface Props {
@@ -16,6 +22,13 @@
     /** Right edge of the neck. Fixed for every drill so shapes visibly climb it. */
     highestFret?: number;
     showInlays?: boolean;
+    /**
+     * Called with the index of the ghost the reader picked. The ghosts are
+     * controls, not just context: the shape you want to see next is already
+     * drawn where it lives, so you can go straight to it rather than counting
+     * steps to it on the squares underneath.
+     */
+    onSelect: (index: number) => void;
   }
 
   let {
@@ -25,15 +38,17 @@
     activeString = -1,
     highestFret = MAX_FRET,
     showInlays = true,
+    onSelect,
   }: Props = $props();
 
   // Viewbox units. The SVG scales to its container, so these set proportion only.
   const PAD_LEFT = 52;
   const PAD_RIGHT = 16;
   const FRET_WIDTH = 26;
-  const FIRST_STRING_Y = 24;
-  const STRING_GAP = 47;
-  const HEIGHT = 156;
+  const FIRST_STRING_Y = 22;
+  const STRING_GAP = 30;
+  const LAST_STRING_Y = FIRST_STRING_Y + 5 * STRING_GAP;
+  const HEIGHT = 212;
   const DOT_RADIUS = 11;
 
   /** Single dots here, a pair at the twelfth. Standard neck markers. */
@@ -48,22 +63,29 @@
   );
 
   let inlays = $derived(SINGLE_INLAYS.filter((fret) => fret <= highestFret));
-  let middleY = FIRST_STRING_Y + STRING_GAP;
+  let middleY = FIRST_STRING_Y + 2.5 * STRING_GAP;
 
-  /** Rows run top to bottom, so the highest-pitched string is drawn first. */
-  let stringLabels = $derived(
-    [...STRING_SETS[shape.item.string_set].names].reverse(),
-  );
+  /**
+   * All six strings, every drill, so the three you are playing always sit in
+   * the same place on the neck you already know rather than floating in a
+   * three-line diagram that has to be re-read each time the set changes.
+   * Rows run top to bottom, so the highest-pitched string is drawn first.
+   */
+  let stringLabels = [...STRING_NAMES].reverse();
 
-  // Where the whole drill sits, so the shape you are on has context.
-  let ghostDots = $derived(
-    ghosts.flatMap((position, positionIndex) =>
-      position.frets.map((fret, stringIndex) => ({
-        key: `${positionIndex}-${stringIndex}-${fret}`,
+  // Where the whole drill sits, so the shape you are on has context. Grouped
+  // by position rather than flattened, so a click on any of a shape's three
+  // notes is a click on that shape.
+  let ghostShapes = $derived(
+    ghosts.map((position, positionIndex) => ({
+      index: positionIndex,
+      label: positionLabel(position),
+      dots: position.frets.map((fret, stringIndex) => ({
+        key: `${stringIndex}-${fret}`,
         x: fret === 0 ? PAD_LEFT + 2 : spaceCentre(fret),
-        y: rowY(2 - stringIndex),
+        y: stringY(position, stringIndex),
       })),
-    ),
+    })),
   );
 
   let dots = $derived(
@@ -73,7 +95,7 @@
         stringIndex,
         name: noteName(shape.tones[tone]),
         x: fret === 0 ? PAD_LEFT + 2 : spaceCentre(fret),
-        y: rowY(2 - stringIndex),
+        y: stringY(shape, stringIndex),
         isRoot: tone === "root",
       };
     }),
@@ -91,6 +113,15 @@
   function rowY(row: number): number {
     return FIRST_STRING_Y + row * STRING_GAP;
   }
+
+  /**
+   * A dot's row on the full neck. `stringIndex` counts within the shape's own
+   * string set, so it has to be mapped out to the guitar string it names.
+   */
+  function stringY(position: Shape, stringIndex: number): number {
+    const string = STRING_SETS[position.item.string_set].indices[stringIndex];
+    return rowY(5 - string);
+  }
 </script>
 
 <svg viewBox="0 0 {width} {HEIGHT}" role="img" aria-label="Fretboard diagram">
@@ -104,7 +135,7 @@
       />
     {/each}
     {#if highestFret >= PAIRED_INLAY}
-      {#each [middleY - 24, middleY + 24] as cy (cy)}
+      {#each [middleY - STRING_GAP, middleY + STRING_GAP] as cy (cy)}
         <circle
           class="inlay"
           cx={spaceCentre(PAIRED_INLAY)}
@@ -115,8 +146,24 @@
     {/if}
   {/if}
 
-  {#each ghostDots as ghost (ghost.key)}
-    <circle class="ghost" cx={ghost.x} cy={ghost.y} r={DOT_RADIUS} />
+  {#each ghostShapes as ghost (ghost.index)}
+    <g
+      class="ghost-shape"
+      role="button"
+      tabindex="0"
+      aria-label="Show {ghost.label}"
+      onclick={() => onSelect(ghost.index)}
+      onkeydown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onSelect(ghost.index);
+        }
+      }}
+    >
+      {#each ghost.dots as dot (dot.key)}
+        <circle class="ghost" cx={dot.x} cy={dot.y} r={DOT_RADIUS} />
+      {/each}
+    </g>
   {/each}
 
   {#each frets as fret (fret)}
@@ -125,11 +172,13 @@
       class:nut={fret === 0}
       x1={fretX(fret)}
       x2={fretX(fret)}
-      y1="14"
-      y2="128"
+      y1={FIRST_STRING_Y - 10}
+      y2={LAST_STRING_Y + 10}
     />
     {#if fret > 0}
-      <text class="fret-num" x={spaceCentre(fret)} y="150">{fret}</text>
+      <text class="fret-num" x={spaceCentre(fret)} y={LAST_STRING_Y + 28}
+        >{fret}</text
+      >
     {/if}
   {/each}
 
@@ -166,6 +215,17 @@
     width: 100%;
     height: auto;
     display: block;
+  }
+
+  /* The neck is decoration. Without this the strings and wires, drawn over the
+     ghosts, swallow clicks aimed at the middle of a ghost — which is exactly
+     where a dot sits on its string. */
+  .inlay,
+  .fret-wire,
+  .string,
+  .fret-num,
+  .string-name {
+    pointer-events: none;
   }
 
   .inlay {
@@ -210,6 +270,26 @@
     stroke: none;
   }
 
+  .ghost-shape {
+    cursor: pointer;
+  }
+
+  .ghost-shape:hover .ghost,
+  .ghost-shape:focus-visible .ghost {
+    fill: color-mix(in srgb, var(--color-accent) 35%, transparent);
+  }
+
+  .ghost-shape:focus {
+    outline: none;
+  }
+
+  /* The solid dots sit on top of the current shape's own ghost, so they let
+     clicks through rather than being a dead patch in the middle of the neck. */
+  .note,
+  .note-name {
+    pointer-events: none;
+  }
+
   .note {
     fill: var(--color-bg);
     stroke: var(--color-text);
@@ -233,7 +313,6 @@
     fill: var(--color-text);
     text-anchor: middle;
     dominant-baseline: central;
-    pointer-events: none;
     transition: x 130ms ease-out;
   }
 
