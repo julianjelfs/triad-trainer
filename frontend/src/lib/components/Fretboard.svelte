@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { MAX_FRET, STRING_SETS, noteName } from '../music';
-  import type { Shape } from '../types';
+  import { MAX_FRET, STRING_SETS, noteName } from "../music";
+  import type { Shape } from "../types";
 
   interface Props {
     shape: Shape;
@@ -24,7 +24,7 @@
     ghosts = [],
     activeString = -1,
     highestFret = MAX_FRET,
-    showInlays = true
+    showInlays = true,
   }: Props = $props();
 
   // Viewbox units. The SVG scales to its container, so these set proportion only.
@@ -43,13 +43,17 @@
 
   let width = $derived(PAD_LEFT + highestFret * FRET_WIDTH + PAD_RIGHT);
   let gridWidth = $derived(highestFret * FRET_WIDTH);
-  let frets = $derived(Array.from({ length: highestFret + 1 }, (_, fret) => fret));
+  let frets = $derived(
+    Array.from({ length: highestFret + 1 }, (_, fret) => fret),
+  );
 
   let inlays = $derived(SINGLE_INLAYS.filter((fret) => fret <= highestFret));
   let middleY = FIRST_STRING_Y + STRING_GAP;
 
   /** Rows run top to bottom, so the highest-pitched string is drawn first. */
-  let stringLabels = $derived([...STRING_SETS[shape.item.string_set].names].reverse());
+  let stringLabels = $derived(
+    [...STRING_SETS[shape.item.string_set].names].reverse(),
+  );
 
   // Where the whole drill sits, so the shape you are on has context.
   let ghostDots = $derived(
@@ -57,9 +61,9 @@
       position.frets.map((fret, stringIndex) => ({
         key: `${positionIndex}-${stringIndex}-${fret}`,
         x: fret === 0 ? PAD_LEFT + 2 : spaceCentre(fret),
-        y: rowY(2 - stringIndex)
-      }))
-    )
+        y: rowY(2 - stringIndex),
+      })),
+    ),
   );
 
   let dots = $derived(
@@ -70,9 +74,9 @@
         name: noteName(shape.tones[tone]),
         x: fret === 0 ? PAD_LEFT + 2 : spaceCentre(fret),
         y: rowY(2 - stringIndex),
-        isRoot: tone === 'root'
+        isRoot: tone === "root",
       };
-    })
+    }),
   );
 
   function fretX(fret: number): number {
@@ -92,11 +96,21 @@
 <svg viewBox="0 0 {width} {HEIGHT}" role="img" aria-label="Fretboard diagram">
   {#if showInlays}
     {#each inlays as fret (fret)}
-      <circle class="inlay" cx={spaceCentre(fret)} cy={middleY} r={INLAY_RADIUS} />
+      <circle
+        class="inlay"
+        cx={spaceCentre(fret)}
+        cy={middleY}
+        r={INLAY_RADIUS}
+      />
     {/each}
     {#if highestFret >= PAIRED_INLAY}
       {#each [middleY - 24, middleY + 24] as cy (cy)}
-        <circle class="inlay" cx={spaceCentre(PAIRED_INLAY)} {cy} r={INLAY_RADIUS} />
+        <circle
+          class="inlay"
+          cx={spaceCentre(PAIRED_INLAY)}
+          {cy}
+          r={INLAY_RADIUS}
+        />
       {/each}
     {/if}
   {/if}
@@ -106,14 +120,27 @@
   {/each}
 
   {#each frets as fret (fret)}
-    <line class="fret-wire" class:nut={fret === 0} x1={fretX(fret)} x2={fretX(fret)} y1="14" y2="128" />
+    <line
+      class="fret-wire"
+      class:nut={fret === 0}
+      x1={fretX(fret)}
+      x2={fretX(fret)}
+      y1="14"
+      y2="128"
+    />
     {#if fret > 0}
       <text class="fret-num" x={spaceCentre(fret)} y="150">{fret}</text>
     {/if}
   {/each}
 
   {#each stringLabels as label, row (row)}
-    <line class="string" x1={PAD_LEFT} x2={PAD_LEFT + gridWidth} y1={rowY(row)} y2={rowY(row)} />
+    <line
+      class="string"
+      x1={PAD_LEFT}
+      x2={PAD_LEFT + gridWidth}
+      y1={rowY(row)}
+      y2={rowY(row)}
+    />
     <text class="string-name" x={PAD_LEFT - 10} y={rowY(row)}>{label}</text>
   {/each}
 
@@ -127,7 +154,9 @@
       r={DOT_RADIUS}
     />
     {#if showLabels}
-      <text class="note-name" class:on-root={dot.isRoot} x={dot.x} y={dot.y}>{dot.name}</text>
+      <text class="note-name" class:on-root={dot.isRoot} x={dot.x} y={dot.y}
+        >{dot.name}</text
+      >
     {/if}
   {/each}
 </svg>
