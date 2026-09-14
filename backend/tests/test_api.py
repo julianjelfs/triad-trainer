@@ -33,9 +33,45 @@ def test_settings_round_trip(client):
         "roots": [0, 7],
         "bpm": 84,
         "show_labels": False,
+        "mode": "comp",
+        "comp_key": 3,
+        "comp_progression": "blues",
+        "comp_string_set": 0,
+        "comp_instrument": "guitar",
+        "comp_bpm": 132,
     }
     assert client.put("/api/settings", json=payload).json() == payload
     assert client.get("/api/settings").json() == payload
+
+
+def test_comping_defaults_are_seeded(client):
+    settings = client.get("/api/settings").json()
+    assert {key: value for key, value in settings.items() if key.startswith("comp_")} == {
+        "comp_key": 7,
+        "comp_progression": "I-V-vi-IV",
+        "comp_string_set": 2,
+        "comp_instrument": "piano",
+        "comp_bpm": 80,
+    }
+    assert settings["mode"] == "drill"
+
+
+@pytest.mark.parametrize(
+    "field, value",
+    [
+        ("comp_key", 12),
+        ("comp_bpm", 200),
+        ("comp_string_set", 4),
+        ("comp_instrument", "banjo"),
+        ("mode", "jam"),
+        ("comp_progression", ""),
+    ],
+)
+def test_rejects_out_of_range_comping_settings(client, field, value):
+    """Invariant 9: bad comping values are refused, not stored."""
+    settings = client.get("/api/settings").json()
+    settings[field] = value
+    assert client.put("/api/settings", json=settings).status_code == 422
 
 
 def test_next_drill_respects_settings(client):

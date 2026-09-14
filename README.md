@@ -34,6 +34,26 @@ moves on without logging it. Both stop the metronome.
 The practice log at the bottom shows what you have played and, more usefully,
 what you have been avoiding.
 
+## Comping
+
+The drill teaches you where each chord's triads are. Comping mode is for using
+them over changes, where the next chord shows up whether you've found it or not.
+
+Switch to **Comping** at the top, then pick a progression, a key, a string set
+and a sound. Press Start and you get one bar of clicks, then the progression on
+piano or guitar, round and round. Bass on one and three, chord on two and four,
+all of it below middle C so it sits under what you play.
+
+Play a triad for each chord. The fretboard shows the nearest triad of the
+current chord to a zone of the neck, and a faint one for the next chord. The
+zone starts around the first fret and moves up two frets every time round the
+progression, then wraps back down. One lap takes you through the whole neck,
+and moving to the next chord is never more than a short shift.
+
+The sounds are real samples, fetched the first time you press Start, so that
+first time needs an internet connection. Nothing in comping mode goes into the
+practice log.
+
 ## Saying "next"
 
 While you are finding the shapes, the "Listen for next" toggle advances a

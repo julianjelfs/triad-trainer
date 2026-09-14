@@ -1,10 +1,7 @@
 /** Three-beat metronome — one beat per note of the triad, one bar per shape. */
+import { audioContext, playClick } from '../audio';
 
 const BEATS = 3;
-const ACCENT_HZ = 1100;
-const BEAT_HZ = 800;
-const CLICK_GAIN = 0.15;
-const CLICK_SECONDS = 0.08;
 
 export interface MetronomeHandlers {
   /** Counting has begun; the drill should go back to its lowest position. */
@@ -22,7 +19,6 @@ export class Metronome {
   readonly beats = BEATS;
 
   #timer: ReturnType<typeof setInterval> | null = null;
-  #audio: AudioContext | null = null;
   #bpm = 60;
   #barsStarted = 0;
 
@@ -68,21 +64,7 @@ export class Metronome {
       if (this.#barsStarted > 0) this.handlers.onBar?.();
       this.#barsStarted += 1;
     }
-    this.#click(this.beat === 0);
-  }
-
-  #click(accented: boolean) {
-    const ctx = (this.#audio ??= new AudioContext());
-    const oscillator = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    oscillator.frequency.value = accented ? ACCENT_HZ : BEAT_HZ;
-    gain.gain.value = CLICK_GAIN;
-    oscillator.connect(gain);
-    gain.connect(ctx.destination);
-
-    oscillator.start();
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + CLICK_SECONDS);
-    oscillator.stop(ctx.currentTime + CLICK_SECONDS + 0.01);
+    const ctx = audioContext();
+    playClick(ctx, ctx.currentTime, this.beat === 0);
   }
 }

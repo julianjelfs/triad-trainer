@@ -33,6 +33,12 @@ def get_settings(conn: sqlite3.Connection) -> Settings:
         roots=sorted(int(v) for v in selections.get("root", [])),
         bpm=int(prefs.get("bpm", 60)),
         show_labels=prefs.get("show_labels", "1") == "1",
+        mode=prefs.get("mode", "drill"),
+        comp_key=int(prefs.get("comp_key", 7)),
+        comp_progression=prefs.get("comp_progression", "I-V-vi-IV"),
+        comp_string_set=int(prefs.get("comp_string_set", 2)),
+        comp_instrument=prefs.get("comp_instrument", "piano"),
+        comp_bpm=int(prefs.get("comp_bpm", 80)),
     )
 
 
@@ -48,7 +54,16 @@ def save_settings(conn: sqlite3.Connection, settings: Settings) -> Settings:
     conn.executemany(
         "INSERT INTO preference (key, value) VALUES (?, ?) "
         "ON CONFLICT(key) DO UPDATE SET value = excluded.value",
-        [("bpm", str(settings.bpm)), ("show_labels", "1" if settings.show_labels else "0")],
+        [
+            ("bpm", str(settings.bpm)),
+            ("show_labels", "1" if settings.show_labels else "0"),
+            ("mode", settings.mode),
+            ("comp_key", str(settings.comp_key)),
+            ("comp_progression", settings.comp_progression),
+            ("comp_string_set", str(settings.comp_string_set)),
+            ("comp_instrument", settings.comp_instrument),
+            ("comp_bpm", str(settings.comp_bpm)),
+        ],
     )
     return get_settings(conn)
 

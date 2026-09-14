@@ -49,6 +49,12 @@ DEFAULT_SELECTIONS: dict[str, list[str]] = {
 DEFAULT_PREFERENCES: dict[str, str] = {
     "bpm": "60",
     "show_labels": "1",
+    "mode": "drill",
+    "comp_key": "7",
+    "comp_progression": "I-V-vi-IV",
+    "comp_string_set": "2",
+    "comp_instrument": "piano",
+    "comp_bpm": "80",
 }
 
 

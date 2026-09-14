@@ -1,6 +1,9 @@
 export type Quality = 'major' | 'minor';
 export type Inversion = 'root' | 'first' | 'second';
 export type ChordTone = 'root' | 'third' | 'fifth';
+export type Tonality = 'major' | 'minor';
+export type Mode = 'drill' | 'comp';
+export type CompInstrument = 'piano' | 'guitar';
 
 /** One chord on one string set. What the backend hands back as the next drill. */
 export interface DrillItem {
@@ -21,6 +24,13 @@ export interface Settings {
   roots: number[];
   bpm: number;
   show_labels: boolean;
+  mode: Mode;
+  /** Tonic pitch class of the comping key. */
+  comp_key: number;
+  comp_progression: string;
+  comp_string_set: number;
+  comp_instrument: CompInstrument;
+  comp_bpm: number;
 }
 
 export interface ItemStat extends TriadItem {

@@ -8,11 +8,34 @@
  */
 import { ApiError, api } from '../api';
 import { SHOW_INVERSION_PICKER, SHOW_ROOT_PICKER } from '../config';
+import { chordsInKey, findProgression } from '../harmony';
 import { ALL_INVERSIONS, ALL_ROOTS, buildDrill } from '../music';
-import type { Drill, PracticeStats, Quality, Settings, TriadItem } from '../types';
+import type { Drill, Mode, PracticeStats, Quality, Settings, TriadItem } from '../types';
 import type { Inversion } from '../types';
 
 const SAVE_DEBOUNCE_MS = 300;
+
+/** What comping starts from, matching the backend's defaults. */
+const COMP_DEFAULTS: Pick<
+  Settings,
+  'mode' | 'comp_key' | 'comp_progression' | 'comp_string_set' | 'comp_instrument' | 'comp_bpm'
+> = {
+  mode: 'drill',
+  comp_key: 7,
+  comp_progression: 'I-V-vi-IV',
+  comp_string_set: 2,
+  comp_instrument: 'piano',
+  comp_bpm: 80
+};
+
+/**
+ * Settings from a backend that predates comping have none of its fields. A key
+ * that is missing when the page first reads it is never tracked, so the mode
+ * switch would change nothing on screen. Every field is there from the start.
+ */
+export function withCompDefaults(settings: Partial<Settings>): Settings {
+  return { ...COMP_DEFAULTS, ...settings } as Settings;
+}
 
 /** Only name the filters you can actually see and change. */
 const NOTHING_SELECTED = (() => {
@@ -37,6 +60,13 @@ export class Trainer {
   shape = $derived(this.drill?.positions[this.positionIndex] ?? null);
   positionCount = $derived(this.drill?.positions.length ?? 0);
 
+  /** The comping progression, worked out in the chosen key. */
+  compChords = $derived(
+    this.settings
+      ? chordsInKey(findProgression(this.settings.comp_progression), this.settings.comp_key)
+      : []
+  );
+
   /** Shapes played but not yet sent. Flushed a lap at a time, not a bar at a time. */
   #unlogged: TriadItem[] = [];
   #saveTimer: ReturnType<typeof setTimeout> | null = null;
@@ -44,7 +74,7 @@ export class Trainer {
   async load() {
     try {
       const [settings, stats] = await Promise.all([api.getSettings(), api.getStats()]);
-      this.settings = settings;
+      this.settings = withCompDefaults(settings);
       this.showLabels = settings.show_labels;
       this.stats = stats;
       this.#openHiddenChoices();
@@ -132,6 +162,24 @@ export class Trainer {
   setBpm(bpm: number) {
     if (!this.settings) return;
     this.settings.bpm = bpm;
+    this.#scheduleSave();
+  }
+
+  setMode(mode: Mode) {
+    this.setComp({ mode });
+  }
+
+  /** Comping's choices are single values, so a change replaces rather than toggles. */
+  setComp(
+    patch: Partial<
+      Pick<
+        Settings,
+        'mode' | 'comp_key' | 'comp_progression' | 'comp_string_set' | 'comp_instrument' | 'comp_bpm'
+      >
+    >
+  ) {
+    if (!this.settings) return;
+    Object.assign(this.settings, patch);
     this.#scheduleSave();
   }
 

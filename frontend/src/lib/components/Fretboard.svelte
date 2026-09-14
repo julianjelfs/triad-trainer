@@ -6,7 +6,7 @@
     noteName,
     positionLabel,
   } from "../music";
-  import type { Shape } from "../types";
+  import type { ChordTone, Shape } from "../types";
 
   interface Props {
     shape: Shape;
@@ -26,9 +26,12 @@
      * Called with the index of the ghost the reader picked. The ghosts are
      * controls, not just context: the shape you want to see next is already
      * drawn where it lives, so you can go straight to it rather than counting
-     * steps to it on the squares underneath.
+     * steps to it on the squares underneath. Leave it out and the ghosts are
+     * only context, with nothing to click.
      */
-    onSelect: (index: number) => void;
+    onSelect?: (index: number) => void;
+    /** Note names as the key spells them. Without it, labels use sharps. */
+    spelling?: Record<ChordTone, string>;
   }
 
   let {
@@ -39,6 +42,7 @@
     highestFret = MAX_FRET,
     showInlays = true,
     onSelect,
+    spelling,
   }: Props = $props();
 
   // Viewbox units. The SVG scales to its container, so these set proportion only.
@@ -93,7 +97,7 @@
       const tone = shape.order[stringIndex];
       return {
         stringIndex,
-        name: noteName(shape.tones[tone]),
+        name: spelling?.[tone] ?? noteName(shape.tones[tone]),
         x: fret === 0 ? PAD_LEFT + 2 : spaceCentre(fret),
         y: stringY(shape, stringIndex),
         isRoot: tone === "root",
@@ -147,23 +151,31 @@
   {/if}
 
   {#each ghostShapes as ghost (ghost.index)}
-    <g
-      class="ghost-shape"
-      role="button"
-      tabindex="0"
-      aria-label="Show {ghost.label}"
-      onclick={() => onSelect(ghost.index)}
-      onkeydown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          onSelect(ghost.index);
-        }
-      }}
-    >
-      {#each ghost.dots as dot (dot.key)}
-        <circle class="ghost" cx={dot.x} cy={dot.y} r={DOT_RADIUS} />
-      {/each}
-    </g>
+    {#if onSelect}
+      <g
+        class="ghost-shape"
+        role="button"
+        tabindex="0"
+        aria-label="Show {ghost.label}"
+        onclick={() => onSelect?.(ghost.index)}
+        onkeydown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault();
+            onSelect?.(ghost.index);
+          }
+        }}
+      >
+        {#each ghost.dots as dot (dot.key)}
+          <circle class="ghost" cx={dot.x} cy={dot.y} r={DOT_RADIUS} />
+        {/each}
+      </g>
+    {:else}
+      <g>
+        {#each ghost.dots as dot (dot.key)}
+          <circle class="ghost" cx={dot.x} cy={dot.y} r={DOT_RADIUS} />
+        {/each}
+      </g>
+    {/if}
   {/each}
 
   {#each frets as fret (fret)}

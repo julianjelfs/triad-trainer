@@ -30,9 +30,21 @@ case "${1:-open}" in
   restart) launchctl kickstart -k "$DOMAIN/$LABEL"; echo "restarted" ;;
   logs)    tail -n "${2:-40}" -f "$LOG" ;;
   rebuild)
+    # Everything "after changing code" can mean: new dependencies on either
+    # side, a new UI, and new API code. Both installs are quick when nothing changed.
+    echo "syncing backend dependencies..."
+    (cd "$ROOT/backend" && uv sync --quiet)
+    echo "installing frontend dependencies..."
+    (cd "$ROOT/frontend" && npm install --no-audit --no-fund --silent)
     echo "building frontend..."
     (cd "$ROOT/frontend" && npm run build)
-    echo "done — reload the page, no restart needed"
+    # The API runs without --reload, so backend changes only land on a restart.
+    if running; then
+      launchctl kickstart -k "$DOMAIN/$LABEL"
+      echo "done, service restarted — reload the page"
+    else
+      echo "done — reload the page once the service is started"
+    fi
     ;;
   serve)
     # Config written while the tailnet had no TLS certs sticks around but never
@@ -102,7 +114,7 @@ triad-trainer — guitar triad drill
   triad-trainer            open it in a browser
   triad-trainer status     is it running, and where
   triad-trainer url        print the URL
-  triad-trainer rebuild    rebuild the UI after changing code
+  triad-trainer rebuild    after changing code: install deps, build the UI, restart
   triad-trainer serve      publish to your tailnet over HTTPS
   triad-trainer unserve    remove it from your tailnet
   triad-trainer logs [n]   follow the log
