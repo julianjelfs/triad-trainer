@@ -10,10 +10,19 @@ PORT=8000
 SERVE_PORT=8443
 ROOT="$(cd "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")/.." && pwd)"
 
+# Read all of `tailscale serve status` before matching. Piped straight into
+# `grep -q` under pipefail, the check fails now and then when another app's rule
+# is listed too: grep stops reading at its match and tailscale dies of SIGPIPE.
+served() {
+  local config
+  config="$(tailscale serve status 2>/dev/null || true)"
+  grep -q ":$SERVE_PORT" <<<"$config"
+}
+
 url() {
   local name
   name="$(tailscale status --json 2>/dev/null | sed -n 's/.*"DNSName": *"\([^"]*\)\..*/\1/p' | head -1)"
-  if [ -n "$name" ] && tailscale serve status 2>/dev/null | grep -q ":$SERVE_PORT"; then
+  if [ -n "$name" ] && served; then
     echo "https://$name:$SERVE_PORT"
   else
     echo "http://127.0.0.1:$PORT"
@@ -49,12 +58,14 @@ case "${1:-open}" in
   serve)
     # Config written while the tailnet had no TLS certs sticks around but never
     # starts a listener, so trust a reply rather than the presence of config.
-    if tailscale serve status 2>/dev/null | grep -q ":$SERVE_PORT"; then
+    if served; then
       if curl -sf -m 8 "$(url)/api/health" >/dev/null 2>&1; then
         echo "already served at $(url)"; exit 0
       fi
-      echo "stale serve config, resetting..."
-      tailscale serve reset 2>/dev/null || true
+      # Only remove this app's rule. `tailscale serve reset` would also remove
+      # every other app served from this machine, such as Recipe for Disaster.
+      echo "stale serve config on :$SERVE_PORT, removing it..."
+      tailscale serve --https=$SERVE_PORT off >/dev/null 2>&1 || true
       sleep 1
     fi
     # Without TLS certs enabled for the tailnet this hangs silently rather than
@@ -62,10 +73,10 @@ case "${1:-open}" in
     tailscale serve --bg --https=$SERVE_PORT "$PORT" >/dev/null 2>&1 &
     serve_pid=$!
     for _ in $(seq 1 20); do
-      tailscale serve status 2>/dev/null | grep -q ":$SERVE_PORT" && break
+      served && break
       sleep 0.5
     done
-    if tailscale serve status 2>/dev/null | grep -q ":$SERVE_PORT"; then
+    if served; then
       echo "published at $(url)"
     else
       kill "$serve_pid" 2>/dev/null || true
@@ -81,7 +92,7 @@ case "${1:-open}" in
     fi
     ;;
   unserve)
-    tailscale serve --https=$SERVE_PORT off 2>/dev/null || tailscale serve reset
+    tailscale serve --https=$SERVE_PORT off >/dev/null 2>&1 || true
     echo "removed from the tailnet"
     ;;
   status)
@@ -96,7 +107,7 @@ case "${1:-open}" in
     else
       echo "api     : not responding on 127.0.0.1:$PORT"
     fi
-    if tailscale serve status 2>/dev/null | grep -q ":$SERVE_PORT"; then
+    if served; then
       if curl -sf -m 8 "$(url)/api/health" >/dev/null 2>&1; then
         echo "tailnet : reachable on :$SERVE_PORT"
       else
