@@ -1,0 +1,11 @@
+[Unit]
+Description=Nightly Triad Trainer database backup
+
+[Timer]
+# Twenty minutes after the recipes backup, so two SQLite copies never overlap.
+OnCalendar=*-*-* 03:50:00
+Persistent=true
+RandomizedDelaySec=300
+
+[Install]
+WantedBy=timers.target
