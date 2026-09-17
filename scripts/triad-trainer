@@ -12,12 +12,10 @@ ROOT="$(cd "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}
 
 on_pi() { ssh -o BatchMode=yes -o ConnectTimeout=10 "$PI" "$@"; }
 
+at_home() { [ -n "$(dig +short A triads.julianjelfs.co.uk 2>/dev/null)" ]; }
+
 url() {
-	if [ -n "$(dig +short A triads.julianjelfs.co.uk 2>/dev/null)" ]; then
-		echo "$HOUSE_URL"
-	else
-		echo "$TAILNET_URL"
-	fi
+	if at_home; then echo "$HOUSE_URL"; else echo "$TAILNET_URL"; fi
 }
 
 case "${1:-open}" in
@@ -34,12 +32,22 @@ case "${1:-open}" in
 			else
 				printf "api       : NOT responding\n"
 			fi
-			printf "backups   : %s, newest %s\n" "$(ls -1 ~/triads-backups/triads-*.db 2>/dev/null | wc -l | tr -d " ")" "$(ls -1t ~/triads-backups/triads-*.db 2>/dev/null | head -1 | xargs -r basename)"
+			n=$(ls -1 ~/triads-backups/triads-*.db 2>/dev/null | wc -l | tr -d " ")
+			if [ "$n" = 0 ]; then
+				printf "backups   : none yet\n"
+			else
+				printf "backups   : %s, newest %s\n" "$n" "$(ls -1t ~/triads-backups/triads-*.db 2>/dev/null | head -1 | xargs -r basename)"
+			fi
 			printf "next backup: %s\n" "$(systemctl list-timers triads-backup --no-pager 2>/dev/null | awk "NR==2 {print \$1, \$2, \$3}")"
 			printf "cpu temp  : %.1fC\n" "$(awk "{print \$1/1000}" /sys/class/thermal/thermal_zone0/temp)"
 			printf "uptime    : %s\n" "$(uptime -p)"
 		'
-		echo "url       : $(url)"
+		if at_home; then
+			echo "house     : $HOUSE_URL"
+		else
+			echo "house     : $HOUSE_URL (not resolving from here)"
+		fi
+		echo "tailnet   : $TAILNET_URL"
 		;;
 
 	logs)   on_pi "sudo journalctl -u triads -n ${2:-40} -f" ;;
