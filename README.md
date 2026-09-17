@@ -82,31 +82,37 @@ Then, to run:
 
 Open <http://localhost:5173>. Ctrl-C stops both halves.
 
-## Having it always there
+## Where it runs
 
-To stop thinking about starting it:
+It lives on the house Raspberry Pi, not on a laptop, at
+`https://triads.julianjelfs.co.uk`. Anyone on the home wifi can open it with
+nothing installed, and the microphone works because that address has a real
+certificate. One systemd unit runs uvicorn on loopback; Caddy in front of it
+holds the certificate and is the only thing listening on the network.
 
-```sh
-./scripts/install-service.sh
-```
-
-That builds the frontend, has the API serve it so the whole thing is one
-process on one port, installs a launchd agent that starts it at login and
-restarts it if it dies, and puts a `triad-trainer` command on your PATH.
+Drive it from the laptop with `triad-trainer`, which works over SSH:
 
 ```sh
 triad-trainer            # open it
-triad-trainer status     # running? reachable where?
+triad-trainer status     # app, Caddy, backups, temperature
 triad-trainer rebuild    # after changing code
 triad-trainer logs
+triad-trainer backup     # snapshot now and pull it here
 ```
 
-To reach it from your other machines, `triad-trainer serve` publishes it to
-your tailnet over HTTPS at `https://<this-machine>.<tailnet>.ts.net:8443`. It
-stays bound to loopback; Tailscale does the proxying, and nothing is exposed to
-the public internet. HTTPS has to be enabled for your tailnet first, under DNS
-in the admin console — without it the microphone is blocked on every machine
-but this one, so voice stepping would not work remotely.
+`triad-trainer rebuild` pulls the code on the Pi and syncs dependencies there,
+builds the frontend **here**, and copies the result across. The Pi never runs
+Vite, which is what keeps a 2GB board comfortable.
 
-Your practice history lives in `backend/triads.db`, on this machine and nowhere
-else. Deleting that file resets the log and nothing else.
+Away from the house it is on the tailnet at
+`https://pi.tail50bfbf.ts.net:8443`, and `triad-trainer url` picks whichever
+applies.
+
+To set a Pi up from scratch, or to put the units back after changing them, run
+`./deploy/install-pi.sh` on the Pi. It is safe to re-run and never touches the
+database. Caddy is configured from the recipe-for-disaster repo, because one
+Caddyfile serves both apps.
+
+Your practice history lives in `backend/triads.db` **on the Pi**. It is backed
+up there nightly, keeping 14, and pulled to `~/Backups/triad-trainer` on the
+laptop, keeping 30. Deleting the file resets the log and nothing else.
