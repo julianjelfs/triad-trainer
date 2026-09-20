@@ -32,6 +32,12 @@
     onSelect?: (index: number) => void;
     /** Note names as the key spells them. Without it, labels use sharps. */
     spelling?: Record<ChordTone, string>;
+    /**
+     * Spelling per ghost, in the same order as `ghosts`. Comping needs it
+     * because its ghost is the next chord, which the current chord's spelling
+     * does not cover. A ghost without one falls back to `spelling`.
+     */
+    ghostSpellings?: Record<ChordTone, string>[];
   }
 
   let {
@@ -43,6 +49,7 @@
     showInlays = true,
     onSelect,
     spelling,
+    ghostSpellings = [],
   }: Props = $props();
 
   // Viewbox units. The SVG scales to its container, so these set proportion only.
@@ -86,6 +93,11 @@
       label: positionLabel(position),
       dots: position.frets.map((fret, stringIndex) => ({
         key: `${stringIndex}-${fret}`,
+        name: toneName(
+          position,
+          stringIndex,
+          ghostSpellings[positionIndex] ?? spelling,
+        ),
         x: fret === 0 ? PAD_LEFT + 2 : spaceCentre(fret),
         y: stringY(position, stringIndex),
       })),
@@ -97,13 +109,22 @@
       const tone = shape.order[stringIndex];
       return {
         stringIndex,
-        name: spelling?.[tone] ?? noteName(shape.tones[tone]),
+        name: toneName(shape, stringIndex, spelling),
         x: fret === 0 ? PAD_LEFT + 2 : spaceCentre(fret),
         y: stringY(shape, stringIndex),
         isRoot: tone === "root",
       };
     }),
   );
+
+  function toneName(
+    position: Shape,
+    stringIndex: number,
+    names?: Record<ChordTone, string>,
+  ): string {
+    const tone = position.order[stringIndex];
+    return names?.[tone] ?? noteName(position.tones[tone]);
+  }
 
   function fretX(fret: number): number {
     return PAD_LEFT + fret * FRET_WIDTH;
@@ -205,6 +226,16 @@
     <text class="string-name" x={PAD_LEFT - 10} y={rowY(row)}>{label}</text>
   {/each}
 
+  <!-- After the strings, which would otherwise strike through the letters.
+       The solid dots come later still and cover the current shape's copy. -->
+  {#if showLabels}
+    {#each ghostShapes as ghost (ghost.index)}
+      {#each ghost.dots as dot (dot.key)}
+        <text class="ghost-name" x={dot.x} y={dot.y}>{dot.name}</text>
+      {/each}
+    {/each}
+  {/if}
+
   {#each dots as dot (dot.stringIndex)}
     <circle
       class="note"
@@ -298,8 +329,24 @@
   /* The solid dots sit on top of the current shape's own ghost, so they let
      clicks through rather than being a dead patch in the middle of the neck. */
   .note,
-  .note-name {
+  .note-name,
+  .ghost-name {
     pointer-events: none;
+  }
+
+  /* Faint enough that the current shape still reads first. The halo breaks
+     the string behind the letter so it stays legible at that weight, and is
+     the ghost's own wash made opaque so it disappears into the circle. */
+  .ghost-name {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 11px;
+    fill: color-mix(in srgb, var(--color-text) 45%, transparent);
+    stroke: color-mix(in srgb, var(--color-text) 10%, var(--color-bg));
+    stroke-width: 2.5;
+    paint-order: stroke;
+    text-anchor: middle;
+    dominant-baseline: central;
   }
 
   .note {

@@ -56,6 +56,7 @@
         ghosts={ghost ? [ghost] : []}
         showLabels={trainer.showLabels}
         spelling={current.spelling}
+        ghostSpellings={next ? [next.spelling] : []}
       />
     </div>
 
