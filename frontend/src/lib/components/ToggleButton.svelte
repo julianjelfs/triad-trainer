@@ -1,8 +1,7 @@
 <script lang="ts">
   /**
-   * A filter you tap rather than tick. `aria-pressed` rather than a checkbox,
-   * because these are toggle buttons: the label is the control, not a caption
-   * next to one.
+   * A choice you tap. `aria-pressed` rather than a checkbox, because the label
+   * is the control, not a caption next to one.
    */
   interface Props {
     label: string;
@@ -10,7 +9,7 @@
     onToggle: (pressed: boolean) => void;
     /** Equal widths, for rows of short labels like the twelve keys. */
     fixedWidth?: boolean;
-    /** Smaller, for toggles that sit beside the fretboard or the mode switch. */
+    /** Smaller, for toggles that sit beside the fretboard. */
     small?: boolean;
   }
 
@@ -19,8 +18,7 @@
 
 <button
   type="button"
-  class="toggle"
-  class:pressed
+  class="pill"
   class:fixed={fixedWidth}
   class:small
   aria-pressed={pressed}
@@ -30,47 +28,14 @@
 </button>
 
 <style>
-  .toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 44px;
-    padding: 0 16px;
-    border: 2px solid var(--color-text);
-    background: transparent;
-    color: var(--color-text);
-    font-family: var(--font-body);
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .toggle.small {
-    min-height: 34px;
-    padding: 0 12px;
-    font-size: 13px;
-  }
-
-  .toggle.fixed {
-    width: 58px;
+  .fixed {
+    width: 48px;
     padding: 0;
   }
 
-  .toggle:hover:not(.pressed) {
-    border-color: var(--color-accent-600);
-    color: var(--color-accent-700);
-  }
-
-  .toggle.pressed {
-    background: var(--color-accent);
-    border-color: var(--color-accent);
-    color: var(--color-bg);
-  }
-
-  .toggle.pressed:hover {
-    background: var(--color-accent-600);
-    border-color: var(--color-accent-600);
+  .small {
+    min-height: 32px;
+    padding: 0 14px;
+    font-size: 13px;
   }
 </style>

@@ -1,6 +1,6 @@
 # Triad Trainer
 
-![C major on strings 4-3-2: four shapes up the neck, roots in red, thirds in blue, fifths in amber](docs/learn.png)
+![A major on strings 5-4-3: do, mi and so tiles above the key pickers, and three shapes up the neck with roots in red, thirds in marigold and fifths in blue](docs/learn.png)
 
 Guitar triad reference. Pick a key, a quality and a string set, and it shows
 every shape of that triad on the neck at once, from the nut to the fifteenth
@@ -8,17 +8,20 @@ fret.
 
 ## Learning
 
-Each dot is coloured by its job in the chord. Red is do (the root), blue is
-mi (the third) and amber is so (the fifth). Minor chords use the same three
-names, so a minor triad looks like its major one with the blue dot a fret
-lower. The dot itself shows the note name, and the "Note names" toggle hides
-it when you want to test yourself.
+Each dot is coloured by its job in the chord: red is do (the root), marigold
+is mi (the third) and blue is so (the fifth). The three tiles at the top give
+that chord's notes for each. Minor chords use the same three names, so a minor
+triad looks like its major one with the marigold dot a fret lower. The dot
+itself shows the note name, and "Note names" in the bottom bar hides it when
+you want to test yourself.
 
-A grey band ties each shape's three notes together. Inversions repeat an
-octave up, so most string sets show four or five shapes.
+A sand-coloured band ties each shape's three notes together. Inversions repeat
+an octave up, so most string sets show three to five shapes. On a phone the
+neck stands upright, nut at the top and low E on the left, like a chord chart.
 
-There is a metronome underneath, three clicks to a bar. It does not change
-the picture. Play through the shapes at whatever pace suits.
+The bottom bar holds a metronome, three clicks to a bar. Each click lights do,
+mi and so in turn and lifts the matching tile. It does not change the picture.
+Play through the shapes at whatever pace suits.
 
 ## Comping
 
@@ -28,8 +31,9 @@ piano or guitar, round and round. Bass on one and three, chord on two and four,
 all of it below middle C so it sits under what you play.
 
 The fretboard shows every shape of the chord that is sounding, coloured the
-same way as in learning mode. Pick whichever shape is nearest your hand. The
-row of chord names above it shows what is coming.
+same way as in learning mode, with the same three tiles above it. Pick
+whichever shape is nearest your hand. The row of chord names above the neck
+shows what is coming.
 
 The sounds are real samples, fetched the first time you press Start, so that
 first time needs an internet connection.

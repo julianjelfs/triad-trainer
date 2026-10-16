@@ -3,8 +3,7 @@
   import type { Comper } from '../state/comper.svelte';
   import type { Trainer } from '../state/trainer.svelte';
   import Fretboard from './Fretboard.svelte';
-  import ToggleButton from './ToggleButton.svelte';
-  import ToneLegend from './ToneLegend.svelte';
+    import ToneTiles from './ToneTiles.svelte';
 
   let { trainer, comper }: { trainer: Trainer; comper: Comper } = $props();
 
@@ -13,6 +12,7 @@
 
   let current = $derived(chords[comper.chordIndex] ?? chords[0]);
   let next = $derived(chords[(comper.chordIndex + 1) % chords.length]);
+  let playing = $derived(comper.running && !comper.countingIn);
 
   /** The same view as learning mode: every shape of the chord that is sounding. */
   let shapes = $derived(
@@ -23,124 +23,153 @@
 </script>
 
 {#if current}
-  <section class="comp">
-    <div class="chord">
-      {current.name}<span class="numeral">&nbsp;{current.numeral}</span>
+  <section class="hero">
+    <div class="name">
+      {#key current.name}
+        <h1 class="chord">{current.name}</h1>
+      {/key}
+      <p class="status">
+        <span class="numeral">{current.numeral}</span>
+        {#if comper.countingIn}
+          Count in…
+        {:else}
+          Next {next.name}
+        {/if}
+        · {STRING_SETS[stringSet].label.toLowerCase()}
+        {#if comper.running}· loop {comper.loop + 1}{/if}
+      </p>
     </div>
-    <div class="meta">
-      {comper.countingIn ? 'Count in' : `Next ${next.name}`} ·
-      {STRING_SETS[stringSet].label}
-      {#if comper.running}· loop {comper.loop + 1}{/if}
-    </div>
-
-    <ol class="progression" aria-label="Progression">
-      {#each chords as chord, index (index)}
-        <li class:on={comper.running && index === comper.chordIndex && !comper.countingIn}>
-          {chord.name}
-        </li>
-      {/each}
-    </ol>
-
-    <div class="diagram">
-      <Fretboard {shapes} showLabels={trainer.showLabels} spelling={current.spelling} />
-    </div>
-
-    <div class="controls">
-      <ToneLegend spelling={current.spelling} />
-      <ToggleButton
-        label="Note names"
-        pressed={trainer.showLabels}
-        onToggle={(on) => trainer.setShowLabels(on)}
-        small
-      />
-    </div>
-
-    <p class="helper">
-      Play a triad for each chord as it comes round. The neck shows every shape of the chord that
-      is sounding, so pick whichever one is closest to where your hand already is.
-    </p>
-
-    {#if comper.error}
-      <p class="error">{comper.error}</p>
-    {/if}
+    <ToneTiles spelling={current.spelling} />
   </section>
+
+  <ol class="progression" aria-label="Progression">
+    {#each chords as chord, index (index)}
+      <li class:on={playing && index === comper.chordIndex}>
+        <span class="symbol">{chord.name}</span>
+        <span class="numeral-small">{chord.numeral}</span>
+      </li>
+    {/each}
+  </ol>
+
+  <section class="card" aria-label="Every shape of the sounding chord">
+    <Fretboard {shapes} showLabels={trainer.showLabels} spelling={current.spelling} />
+  </section>
+
+  {#if comper.error}
+    <p class="error" role="alert">{comper.error}</p>
+  {/if}
 {/if}
 
 <style>
-  .comp {
-    padding: 30px 0 8px;
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(200px, 1fr) minmax(0, 1.7fr);
+    align-items: end;
+    gap: 24px;
   }
 
   .chord {
-    font-family: var(--font-heading);
+    margin: 0;
     font-weight: 800;
-    font-size: clamp(34px, 5vw, 56px);
-    line-height: 1;
-    letter-spacing: -0.015em;
+    font-size: clamp(56px, 7vw, 80px);
+    line-height: 0.85;
+    letter-spacing: -0.035em;
+    font-variation-settings: 'opsz' 96;
+    animation: chord-in 320ms var(--ease-out) backwards;
+  }
+
+  .status {
+    margin: 12px 0 0;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink-soft);
   }
 
   .numeral {
-    color: var(--color-accent);
-  }
-
-  .meta {
-    margin-top: 10px;
+    margin-right: 8px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: var(--ink);
+    color: var(--paper);
+    font-weight: 700;
     font-size: 13px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--color-neutral-600);
   }
 
   .progression {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    margin: 18px 0 0;
+    gap: 6px;
+    margin: 26px 0 0;
     padding: 0;
     list-style: none;
   }
 
   .progression li {
-    min-width: 44px;
-    padding: 6px 10px;
-    text-align: center;
-    font-size: 14px;
-    font-weight: 600;
-    border: 2px solid var(--color-neutral-300);
-    color: var(--color-neutral-700);
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    min-height: 40px;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: var(--sand);
+    transition:
+      background-color 160ms var(--ease-out),
+      color 160ms var(--ease-out);
   }
 
   .progression li.on {
-    border-color: var(--color-accent);
-    background: var(--color-accent);
-    color: var(--color-bg);
+    background: var(--ink);
+    color: var(--paper);
   }
 
-  .diagram {
-    margin: 26px 0 4px;
+  .symbol {
+    font-weight: 700;
   }
 
-  .controls {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    flex-wrap: wrap;
-    margin: 14px 0 12px;
-  }
-
-  .helper {
-    margin: 6px 0;
+  .numeral-small {
     font-size: 13px;
-    line-height: 1.5;
-    color: var(--color-neutral-600);
-    max-width: 62ch;
-    text-wrap: pretty;
+    font-weight: 600;
+    color: var(--ink-soft);
+  }
+
+  .progression li.on .numeral-small {
+    color: var(--sand-strong);
+  }
+
+  .card {
+    margin-top: 18px;
+    padding: 14px 22px 10px;
+    border-radius: var(--radius-card);
+    background: var(--card);
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent);
   }
 
   .error {
-    margin: 6px 0;
-    font-size: 13px;
-    color: var(--color-accent-700);
+    margin: 16px 0 0;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--do) 12%, var(--paper));
+    color: color-mix(in srgb, var(--do) 70%, var(--ink));
+    font-size: 14px;
+  }
+
+  @keyframes chord-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+
+  @media (max-width: 760px) {
+    .hero {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .card {
+      padding: 14px 10px 10px;
+    }
   }
 </style>

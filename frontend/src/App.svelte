@@ -3,8 +3,7 @@
   import CompSettings from './lib/components/CompSettings.svelte';
   import CompStage from './lib/components/CompStage.svelte';
   import LearnStage from './lib/components/LearnStage.svelte';
-  import MetronomeBar from './lib/components/MetronomeBar.svelte';
-  import ToggleButton from './lib/components/ToggleButton.svelte';
+  import Segmented from './lib/components/Segmented.svelte';
   import { Comper } from './lib/state/comper.svelte';
   import { Metronome } from './lib/state/metronome.svelte';
   import { trainer } from './lib/state/trainer.svelte';
@@ -13,6 +12,11 @@
 
   const metronome = new Metronome();
   const comper = new Comper();
+
+  const MODES: { value: Mode; label: string }[] = [
+    { value: 'learn', label: 'Learn' },
+    { value: 'comp', label: 'Comping' }
+  ];
 
   let mode = $derived<Mode>(trainer.settings?.mode ?? 'learn');
 
@@ -33,107 +37,91 @@
 
 <div class="page">
   <header>
-    <div class="top">
-      <div class="modes">
-        <ToggleButton label="Learn" pressed={mode === 'learn'} onToggle={() => switchMode('learn')} small />
-        <ToggleButton label="Comping" pressed={mode === 'comp'} onToggle={() => switchMode('comp')} small />
-      </div>
-      <span class="strapline">
-        {mode === 'learn' ? 'One chord · every shape' : 'Real changes · the whole neck'}
-      </span>
-    </div>
-    <h1>Triad Trainer</h1>
-    <p class="subtitle">
-      {#if mode === 'learn'}
-        Pick a key, a quality and a string set, and see every shape of that triad on the neck. Red
-        is do, blue is mi, amber is so.
-      {:else}
-        Pick a key and a progression, and it plays the changes. The neck shows every shape of the
-        chord that is sounding.
-      {/if}
-    </p>
+    <span class="wordmark">
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="6" cy="17" r="4.2" fill="var(--do)" />
+        <circle cx="12" cy="7.5" r="4.2" fill="var(--mi)" />
+        <circle cx="18" cy="17" r="4.2" fill="var(--so)" />
+      </svg>
+      Triad Trainer
+    </span>
+    <Segmented label="Mode" options={MODES} value={mode} onChange={switchMode} />
   </header>
 
-  <div class="rule"></div>
+  <main>
+    {#if trainer.loading}
+      <p class="status">Loading…</p>
+    {:else if !trainer.settings}
+      <!-- Nothing to draw without settings; the notice below says why. -->
+    {:else if mode === 'comp'}
+      <CompStage {trainer} {comper} />
+      <CompSettings {trainer} {comper} />
+      <div class="transport">
+        <CompBar {trainer} {comper} />
+      </div>
+    {:else}
+      <LearnStage {trainer} {metronome} />
+    {/if}
+  </main>
 
-  {#if trainer.loading}
-    <p class="loading">Loading…</p>
-  {:else if !trainer.settings}
-    <!-- Nothing to draw without settings; the notice below says why. -->
-  {:else if mode === 'comp'}
-    <CompSettings {trainer} {comper} />
-    <div class="rule"></div>
-
-    <CompStage {trainer} {comper} />
-    <div class="rule"></div>
-
-    <CompBar {trainer} {comper} />
-  {:else}
-    <LearnStage {trainer} />
-    <div class="rule"></div>
-
-    <MetronomeBar {trainer} {metronome} />
+  {#if trainer.notice}
+    <p class="notice" role="status">{trainer.notice}</p>
   {/if}
-
-  <div class="notice">{trainer.notice}</div>
 </div>
 
 <style>
   .page {
-    max-width: 1000px;
+    max-width: 1040px;
     margin: 0 auto;
-    padding: 40px 28px 72px;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+    padding: 20px 32px 0;
   }
 
-  .top {
+  header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    flex-wrap: wrap;
+    margin-bottom: 28px;
   }
 
-  .modes {
-    display: flex;
-    gap: 8px;
+  .wordmark {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.01em;
   }
 
-  .strapline {
-    font-size: 12px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--color-neutral-600);
+  .wordmark svg {
+    width: 24px;
+    height: 24px;
   }
 
-  h1 {
-    font-size: clamp(44px, 7vw, 76px);
-    line-height: 0.95;
-    letter-spacing: -0.02em;
-    text-transform: uppercase;
-    margin: 18px 0 14px;
-  }
-
-  .subtitle {
-    margin: 0 0 24px;
-    max-width: 52ch;
-    font-size: 15px;
-    line-height: 1.5;
-    color: var(--color-neutral-700);
-    text-wrap: pretty;
-  }
-
-  .loading {
-    padding: 40px 0;
-    color: var(--color-neutral-700);
+  .status {
+    color: var(--ink-soft);
   }
 
   .notice {
-    min-height: 18px;
-    margin-top: 28px;
-    font-size: 12px;
-    color: var(--color-accent-700);
+    margin: 28px 0 0;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--do) 12%, var(--paper));
+    color: color-mix(in srgb, var(--do) 70%, var(--ink));
+    font-size: 14px;
+  }
+
+  @media (max-width: 600px) {
+    .page {
+      padding: 14px 16px 0;
+    }
+
+    header {
+      margin-bottom: 24px;
+    }
+
+    .wordmark {
+      font-size: 16px;
+    }
   }
 </style>

@@ -1,42 +1,48 @@
 <script lang="ts">
   import type { Metronome } from '../state/metronome.svelte';
   import type { Trainer } from '../state/trainer.svelte';
+  import BpmStepper from './BpmStepper.svelte';
+  import ToggleButton from './ToggleButton.svelte';
 
   let { trainer, metronome }: { trainer: Trainer; metronome: Metronome } = $props();
 
-  const MIN_BPM = 30;
-  const MAX_BPM = 160;
-
   let bpm = $derived(trainer.settings?.bpm ?? 60);
 
-  function onBpmInput(value: string) {
-    const parsed = Number.parseInt(value, 10);
-    if (Number.isNaN(parsed) || parsed < MIN_BPM || parsed > MAX_BPM) return;
-    trainer.set({ bpm: parsed });
-    metronome.retempo(parsed);
+  /** Beat one is do, two is mi, three is so. */
+  const BEAT_TONES = ['root', 'third', 'fifth'] as const;
+
+  function setBpm(value: number) {
+    trainer.set({ bpm: value });
+    metronome.retempo(value);
   }
 </script>
 
-<section class="bar">
-  <button type="button" class="btn btn-primary" onclick={() => metronome.toggle(bpm)}>
-    {metronome.running ? '■ Stop metronome' : '▶ Start metronome'}
+<section class="bar" aria-label="Metronome">
+  <button type="button" class="pill solid play" onclick={() => metronome.toggle(bpm)}>
+    <svg viewBox="0 0 16 16" aria-hidden="true">
+      {#if metronome.running}
+        <rect x="4" y="4" width="8" height="8" rx="1.5" />
+      {:else}
+        <path d="M5 3.5v9l7.5-4.5z" />
+      {/if}
+    </svg>
+    {metronome.running ? 'Stop' : 'Metronome'}
   </button>
 
-  <label class="bpm">
-    BPM
-    <input
-      class="input"
-      type="number"
-      min={MIN_BPM}
-      max={MAX_BPM}
-      value={bpm}
-      oninput={(event) => onBpmInput(event.currentTarget.value)}
+  <BpmStepper {bpm} onChange={setBpm} />
+
+  <div class="names">
+    <ToggleButton
+      label="Note names"
+      pressed={trainer.showLabels}
+      onToggle={(on) => trainer.setShowLabels(on)}
+      small
     />
-  </label>
+  </div>
 
   <div class="beats" aria-hidden="true">
-    {#each { length: metronome.beats } as _, index (index)}
-      <span class="beat" class:on={metronome.beat === index}></span>
+    {#each BEAT_TONES as tone, index (tone)}
+      <span class="beat {tone}" class:on={metronome.beat === index}></span>
     {/each}
   </div>
 </section>
@@ -45,39 +51,64 @@
   .bar {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 12px;
     flex-wrap: wrap;
-    padding: 22px 0;
   }
 
-  .bpm {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--color-neutral-600);
+  .play {
+    min-height: 42px;
+    padding: 0 20px 0 16px;
   }
 
-  .bpm .input {
-    width: 72px;
+  .play svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+  }
+
+  .names {
+    margin-left: auto;
   }
 
   .beats {
     display: flex;
     gap: 8px;
-    margin-left: auto;
+  }
+
+  /* No room on a phone; the beat lights matter less than the buttons. */
+  @media (max-width: 600px) {
+    .beats {
+      display: none;
+    }
   }
 
   .beat {
     width: 14px;
     height: 14px;
-    background: var(--color-neutral-300);
+    border-radius: 50%;
+    background: var(--sand-strong);
+    transition: background-color 90ms linear;
   }
 
   .beat.on {
-    background: var(--color-accent);
-    animation: beat-pulse 150ms ease-out;
+    animation: beat 260ms var(--ease-out);
+  }
+
+  .beat.root.on {
+    background: var(--do);
+  }
+
+  .beat.third.on {
+    background: var(--mi);
+  }
+
+  .beat.fifth.on {
+    background: var(--so);
+  }
+
+  @keyframes beat {
+    from {
+      transform: scale(1.5);
+    }
   }
 </style>

@@ -12,7 +12,10 @@
   let open = $state(false);
 
   const progressionOptions = PROGRESSIONS.map((p) => ({ value: p.id, label: p.name }));
-  const setOptions = STRING_SETS.map((set, index) => ({ value: index, label: set.label }));
+  const setOptions = STRING_SETS.map((set, index) => ({
+    value: index,
+    label: set.label.replace('Strings ', '')
+  }));
   const soundOptions: { value: CompInstrument; label: string }[] = [
     { value: 'piano', label: 'Piano' },
     { value: 'guitar', label: 'Guitar' }
@@ -63,7 +66,7 @@
           fixedWidth
         />
         <ToggleGroup
-          title="String set"
+          title="Strings"
           options={setOptions}
           selected={[trainer.settings.comp_string_set]}
           onToggle={(value) => trainer.set({ comp_string_set: value })}
@@ -81,13 +84,19 @@
 
 <style>
   .settings {
-    padding: 22px 0;
+    margin-top: 24px;
   }
 
   .groups {
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    padding: 24px 0 4px;
+    gap: 14px;
+    padding: 20px 4px 4px;
+  }
+
+  @media (max-width: 600px) {
+    .groups {
+      gap: 18px;
+    }
   }
 </style>

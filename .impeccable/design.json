@@ -1,0 +1,456 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-16T00:00:00Z",
+  "title": "Design System: Triad Trainer",
+  "extensions": {
+    "colorMeta": {
+      "do": {
+        "role": "primary",
+        "displayName": "Vermilion Do",
+        "canonical": "oklch(56.1% 0.182 31.9)",
+        "tonalRamp": [
+          "oklch(15% 0.182 31.9)",
+          "oklch(26% 0.182 31.9)",
+          "oklch(37% 0.182 31.9)",
+          "oklch(48% 0.182 31.9)",
+          "oklch(59% 0.182 31.9)",
+          "oklch(70% 0.182 31.9)",
+          "oklch(82% 0.182 31.9)",
+          "oklch(95% 0.182 31.9)"
+        ]
+      },
+      "mi": {
+        "role": "primary",
+        "displayName": "Marigold Mi",
+        "canonical": "oklch(79.7% 0.154 80.1)",
+        "tonalRamp": [
+          "oklch(15% 0.154 80.1)",
+          "oklch(26% 0.154 80.1)",
+          "oklch(37% 0.154 80.1)",
+          "oklch(48% 0.154 80.1)",
+          "oklch(59% 0.154 80.1)",
+          "oklch(70% 0.154 80.1)",
+          "oklch(82% 0.154 80.1)",
+          "oklch(95% 0.154 80.1)"
+        ]
+      },
+      "so": {
+        "role": "primary",
+        "displayName": "Cobalt So",
+        "canonical": "oklch(51.4% 0.118 250.7)",
+        "tonalRamp": [
+          "oklch(15% 0.118 250.7)",
+          "oklch(26% 0.118 250.7)",
+          "oklch(37% 0.118 250.7)",
+          "oklch(48% 0.118 250.7)",
+          "oklch(59% 0.118 250.7)",
+          "oklch(70% 0.118 250.7)",
+          "oklch(82% 0.118 250.7)",
+          "oklch(95% 0.118 250.7)"
+        ]
+      },
+      "mi-edge": {
+        "role": "primary",
+        "displayName": "Marigold Rim",
+        "canonical": "oklch(67.4% 0.137 77.9)",
+        "tonalRamp": [
+          "oklch(15% 0.137 77.9)",
+          "oklch(26% 0.137 77.9)",
+          "oklch(37% 0.137 77.9)",
+          "oklch(48% 0.137 77.9)",
+          "oklch(59% 0.137 77.9)",
+          "oklch(70% 0.137 77.9)",
+          "oklch(82% 0.137 77.9)",
+          "oklch(95% 0.137 77.9)"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Chart Paper",
+        "canonical": "oklch(94.5% 0.026 84.6)",
+        "tonalRamp": [
+          "oklch(15% 0.026 84.6)",
+          "oklch(26% 0.026 84.6)",
+          "oklch(37% 0.026 84.6)",
+          "oklch(48% 0.026 84.6)",
+          "oklch(59% 0.026 84.6)",
+          "oklch(70% 0.026 84.6)",
+          "oklch(82% 0.026 84.6)",
+          "oklch(95% 0.026 84.6)"
+        ]
+      },
+      "card": {
+        "role": "neutral",
+        "displayName": "Cream Card",
+        "canonical": "oklch(98.6% 0.014 84.6)",
+        "tonalRamp": [
+          "oklch(15% 0.014 84.6)",
+          "oklch(26% 0.014 84.6)",
+          "oklch(37% 0.014 84.6)",
+          "oklch(48% 0.014 84.6)",
+          "oklch(59% 0.014 84.6)",
+          "oklch(70% 0.014 84.6)",
+          "oklch(82% 0.014 84.6)",
+          "oklch(95% 0.014 84.6)"
+        ]
+      },
+      "sand": {
+        "role": "neutral",
+        "displayName": "Sand",
+        "canonical": "oklch(90.6% 0.033 85.5)",
+        "tonalRamp": [
+          "oklch(15% 0.033 85.5)",
+          "oklch(26% 0.033 85.5)",
+          "oklch(37% 0.033 85.5)",
+          "oklch(48% 0.033 85.5)",
+          "oklch(59% 0.033 85.5)",
+          "oklch(70% 0.033 85.5)",
+          "oklch(82% 0.033 85.5)",
+          "oklch(95% 0.033 85.5)"
+        ]
+      },
+      "sand-strong": {
+        "role": "neutral",
+        "displayName": "Deep Sand",
+        "canonical": "oklch(85.3% 0.042 83.9)",
+        "tonalRamp": [
+          "oklch(15% 0.042 83.9)",
+          "oklch(26% 0.042 83.9)",
+          "oklch(37% 0.042 83.9)",
+          "oklch(48% 0.042 83.9)",
+          "oklch(59% 0.042 83.9)",
+          "oklch(70% 0.042 83.9)",
+          "oklch(82% 0.042 83.9)",
+          "oklch(95% 0.042 83.9)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Brown-Black Ink",
+        "canonical": "oklch(26.9% 0.013 62.1)",
+        "tonalRamp": [
+          "oklch(15% 0.013 62.1)",
+          "oklch(26% 0.013 62.1)",
+          "oklch(37% 0.013 62.1)",
+          "oklch(48% 0.013 62.1)",
+          "oklch(59% 0.013 62.1)",
+          "oklch(70% 0.013 62.1)",
+          "oklch(82% 0.013 62.1)",
+          "oklch(95% 0.013 62.1)"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "oklch(48.7% 0.029 71.1)",
+        "tonalRamp": [
+          "oklch(15% 0.029 71.1)",
+          "oklch(26% 0.029 71.1)",
+          "oklch(37% 0.029 71.1)",
+          "oklch(48% 0.029 71.1)",
+          "oklch(59% 0.029 71.1)",
+          "oklch(70% 0.029 71.1)",
+          "oklch(82% 0.029 71.1)",
+          "oklch(95% 0.029 71.1)"
+        ]
+      },
+      "string": {
+        "role": "neutral",
+        "displayName": "String Brown",
+        "canonical": "oklch(59.1% 0.033 73.6)",
+        "tonalRamp": [
+          "oklch(15% 0.033 73.6)",
+          "oklch(26% 0.033 73.6)",
+          "oklch(37% 0.033 73.6)",
+          "oklch(48% 0.033 73.6)",
+          "oklch(59% 0.033 73.6)",
+          "oklch(70% 0.033 73.6)",
+          "oklch(82% 0.033 73.6)",
+          "oklch(95% 0.033 73.6)"
+        ]
+      },
+      "fret": {
+        "role": "neutral",
+        "displayName": "Fret Wire",
+        "canonical": "oklch(87.7% 0.038 84.6)",
+        "tonalRamp": [
+          "oklch(15% 0.038 84.6)",
+          "oklch(26% 0.038 84.6)",
+          "oklch(37% 0.038 84.6)",
+          "oklch(48% 0.038 84.6)",
+          "oklch(59% 0.038 84.6)",
+          "oklch(70% 0.038 84.6)",
+          "oklch(82% 0.038 84.6)",
+          "oklch(95% 0.038 84.6)"
+        ]
+      },
+      "inlay": {
+        "role": "neutral",
+        "displayName": "Inlay Cream",
+        "canonical": "oklch(92.2% 0.030 83.6)",
+        "tonalRamp": [
+          "oklch(15% 0.030 83.6)",
+          "oklch(26% 0.030 83.6)",
+          "oklch(37% 0.030 83.6)",
+          "oklch(48% 0.030 83.6)",
+          "oklch(59% 0.030 83.6)",
+          "oklch(70% 0.030 83.6)",
+          "oklch(82% 0.030 83.6)",
+          "oklch(95% 0.030 83.6)"
+        ]
+      },
+      "band": {
+        "role": "neutral",
+        "displayName": "Shape Band",
+        "canonical": "oklch(93.4% 0.030 83.6)",
+        "tonalRamp": [
+          "oklch(15% 0.030 83.6)",
+          "oklch(26% 0.030 83.6)",
+          "oklch(37% 0.030 83.6)",
+          "oklch(48% 0.030 83.6)",
+          "oklch(59% 0.030 83.6)",
+          "oklch(70% 0.030 83.6)",
+          "oklch(82% 0.030 83.6)",
+          "oklch(95% 0.030 83.6)"
+        ]
+      },
+      "on-do": {
+        "role": "primary",
+        "displayName": "On Do",
+        "canonical": "#ffffff"
+      },
+      "on-so": {
+        "role": "primary",
+        "displayName": "On So",
+        "canonical": "#ffffff"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Chord name",
+        "purpose": "The chord name in the hero. Caps at 80px in both modes."
+      },
+      "headline": {
+        "displayName": "Syllable",
+        "purpose": "do, mi, so on the tone tiles."
+      },
+      "title": {
+        "displayName": "Wordmark",
+        "purpose": "The app name in the header."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Base text and status lines."
+      },
+      "label": {
+        "displayName": "Control label",
+        "purpose": "Text on pills, segmented options and chips."
+      },
+      "caption": {
+        "displayName": "Caption",
+        "purpose": "Picker group labels, tone roles, numerals, the small pill."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card-hairline",
+        "value": "0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent)",
+        "purpose": "The neck card only."
+      },
+      {
+        "name": "beat-lift",
+        "value": "0 10px 18px -8px color-mix(in srgb, var(--ink) 45%, transparent)",
+        "purpose": "The tone tile on the current metronome beat, with translateY(-6px)."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "The only easing curve; every transition and keyframe uses it."
+      },
+      {
+        "name": "control-state",
+        "value": "160ms",
+        "purpose": "Pill, stepper and header colour changes and the 0.96 press scale. Segmented uses 200ms."
+      },
+      {
+        "name": "tile-lift",
+        "value": "220ms",
+        "purpose": "Tone tile rising on its beat; section chevron rotation."
+      },
+      {
+        "name": "neck-sweep",
+        "value": "220ms spread, 420ms per dot",
+        "purpose": "Dots scale in from 0.55 with delay proportional to fret; bands fade in over 420ms."
+      },
+      {
+        "name": "note-in",
+        "value": "360ms",
+        "purpose": "New note name rises 6px into a tone tile."
+      },
+      {
+        "name": "chord-in",
+        "value": "320ms",
+        "purpose": "Comping chord name rises 10px on change."
+      },
+      {
+        "name": "beat-pulse",
+        "value": "260ms",
+        "purpose": "Beat light scales from 1.5 when it lights."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "1ms",
+        "purpose": "prefers-reduced-motion cuts every animation and transition to 1ms."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "phone",
+        "value": "600px"
+      },
+      {
+        "name": "hero-stack",
+        "value": "760px"
+      },
+      {
+        "name": "page-max",
+        "value": "1040px"
+      }
+    ],
+    "focus": {
+      "value": "outline: 2px solid var(--ink); outline-offset: 3px",
+      "purpose": "Every focusable element, on :focus-visible only."
+    }
+  },
+  "components": [
+    {
+      "name": "Pill",
+      "kind": "button",
+      "refersTo": "pill",
+      "description": "The one button shape: sand at rest, deep sand on hover, ink when pressed.",
+      "html": "<div class=\"ds-row\"><button class=\"ds-pill\" aria-pressed=\"false\">Minor</button><button class=\"ds-pill\" aria-pressed=\"true\">Major</button><button class=\"ds-pill\" disabled>Off</button></div>",
+      "css": ".ds-row{display:flex;gap:6px;flex-wrap:wrap} .ds-pill{font-family: var(--font);display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border:0;border-radius:999px;background:var(--sand);color:var(--ink);font-weight:600;font-size:14px;line-height:1;cursor:pointer;transition:background-color 160ms var(--ease-out),color 160ms var(--ease-out),transform 160ms var(--ease-out)} .ds-pill:hover{background:var(--sand-strong)} .ds-pill:active{transform:scale(0.96)} .ds-pill[aria-pressed='true']{background:var(--ink);color:var(--paper)} .ds-pill:disabled{opacity:.5;cursor:not-allowed} .ds-pill:focus-visible{outline:2px solid var(--ink);outline-offset:3px}"
+    },
+    {
+      "name": "Key pill row",
+      "kind": "chip",
+      "refersTo": "pill-key",
+      "description": "Fixed 48px pills so the twelve keys line up, with a 96px label column.",
+      "html": "<div class=\"ds-group\"><span class=\"ds-label\">Key</span><div class=\"ds-row\"><button class=\"ds-key\">C</button><button class=\"ds-key\">Db</button><button class=\"ds-key\" aria-pressed=\"true\">D</button><button class=\"ds-key\">Eb</button></div></div>",
+      "css": ".ds-group{display:grid;grid-template-columns:96px 1fr;align-items:center;gap:12px} .ds-label{font-family: var(--font);font-weight:600;font-size:13px;color:var(--ink-soft)} .ds-row{display:flex;gap:6px} .ds-key{font-family: var(--font);width:48px;min-height:40px;padding:0;border:0;border-radius:999px;background:var(--sand);color:var(--ink);font-weight:600;font-size:14px;cursor:pointer;transition:background-color 160ms var(--ease-out)} .ds-key:hover{background:var(--sand-strong)} .ds-key[aria-pressed='true']{background:var(--ink);color:var(--paper)} .ds-key:focus-visible{outline:2px solid var(--ink);outline-offset:3px}"
+    },
+    {
+      "name": "Play button",
+      "kind": "button",
+      "refersTo": "play-button",
+      "description": "Solid ink pill that leads the transport.",
+      "html": "<button class=\"ds-play\"><svg viewBox=\"0 0 16 16\" aria-hidden=\"true\"><path d=\"M5 3.5v9l7.5-4.5z\"/></svg>Metronome</button>",
+      "css": ".ds-play{font-family: var(--font);display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:0 20px 0 16px;border:0;border-radius:999px;background:var(--ink);color:var(--paper);font-weight:600;font-size:14px;line-height:1;cursor:pointer;transition:transform 160ms var(--ease-out)} .ds-play:active{transform:scale(0.96)} .ds-play svg{width:14px;height:14px;fill:currentColor} .ds-play:focus-visible{outline:2px solid var(--ink);outline-offset:3px}"
+    },
+    {
+      "name": "Segmented control",
+      "kind": "nav",
+      "refersTo": "segmented-track",
+      "description": "Learn/Comping switch: ink option in a sand track.",
+      "html": "<div class=\"ds-track\" role=\"radiogroup\"><button class=\"ds-seg on\" role=\"radio\" aria-checked=\"true\">Learn</button><button class=\"ds-seg\" role=\"radio\" aria-checked=\"false\">Comping</button></div>",
+      "css": ".ds-track{display:inline-flex;padding:4px;gap:2px;border-radius:999px;background:var(--sand)} .ds-seg{font-family: var(--font);min-height:34px;padding:0 18px;border:0;border-radius:999px;background:transparent;color:var(--ink);font-weight:600;font-size:14px;cursor:pointer;transition:background-color 200ms var(--ease-out),color 200ms var(--ease-out)} .ds-seg:hover:not(.on){background:var(--sand-strong)} .ds-seg.on{background:var(--ink);color:var(--paper)} .ds-seg:focus-visible{outline:2px solid var(--ink);outline-offset:3px}"
+    },
+    {
+      "name": "BPM stepper",
+      "kind": "input",
+      "refersTo": "bpm-stepper",
+      "description": "Big minus and plus buttons round a bare tabular number.",
+      "html": "<div class=\"ds-stepper\"><button class=\"ds-step\" aria-label=\"Slower\"><svg viewBox=\"0 0 16 16\"><path d=\"M3.5 8h9\"/></svg></button><label class=\"ds-bpm\"><input value=\"60\" type=\"number\"><span>bpm</span></label><button class=\"ds-step\" aria-label=\"Faster\"><svg viewBox=\"0 0 16 16\"><path d=\"M3.5 8h9M8 3.5v9\"/></svg></button></div>",
+      "css": ".ds-stepper{display:inline-flex;align-items:center;gap:2px;padding:4px;border-radius:999px;background:var(--sand)} .ds-step{display:grid;place-items:center;width:34px;height:34px;border:0;border-radius:50%;background:transparent;color:var(--ink);cursor:pointer;transition:background-color 160ms var(--ease-out)} .ds-step:hover{background:var(--sand-strong)} .ds-step:focus-visible{outline:2px solid var(--ink);outline-offset:3px} .ds-step svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round} .ds-bpm{display:flex;align-items:baseline;gap:4px;padding:0 4px} .ds-bpm input{font-family: var(--font);width:3ch;border:0;background:transparent;color:var(--ink);font-weight:700;font-size:17px;text-align:right;font-variant-numeric:tabular-nums;appearance:textfield} .ds-bpm span{font-family: var(--font);font-size:13px;color:var(--ink-soft)}"
+    },
+    {
+      "name": "Tone tiles",
+      "kind": "custom",
+      "refersTo": "tone-tile-do",
+      "description": "Do, mi and so as flash-card tiles; the beat's tile lifts.",
+      "html": "<ul class=\"ds-tiles\"><li class=\"ds-tile do\"><span class=\"ds-syl\">do</span><span class=\"ds-note\"><b>A</b><span>root</span></span></li><li class=\"ds-tile mi active\"><span class=\"ds-syl\">mi</span><span class=\"ds-note\"><b>C#</b><span>third</span></span></li><li class=\"ds-tile so\"><span class=\"ds-syl\">so</span><span class=\"ds-note\"><b>E</b><span>fifth</span></span></li></ul>",
+      "css": ".ds-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0;padding:0;list-style:none} .ds-tile{font-family: var(--font);display:flex;flex-direction:column;justify-content:space-between;gap:14px;min-height:100px;padding:16px 18px 14px;border-radius:var(--radius-tile);transition:transform 220ms var(--ease-out),box-shadow 220ms var(--ease-out)} .ds-tile.do{background:var(--do);color:var(--on-do)} .ds-tile.mi{background:var(--mi);color:var(--on-mi)} .ds-tile.so{background:var(--so);color:var(--on-so)} .ds-tile.active{transform:translateY(-6px);box-shadow:0 10px 18px -8px color-mix(in srgb,var(--ink) 45%,transparent)} .ds-syl{font-weight:800;font-size:44px;line-height:.9;letter-spacing:-0.02em;font-variation-settings:'opsz' 96} .ds-note{display:flex;align-items:baseline;gap:8px} .ds-note b{font-weight:800;font-size:20px} .ds-note span{font-size:13px;font-weight:600}"
+    },
+    {
+      "name": "Neck card",
+      "kind": "card",
+      "refersTo": "neck-card",
+      "description": "Cream card with a hairline shadow holding the fretboard.",
+      "html": "<section class=\"ds-card\"><svg viewBox=\"0 0 200 80\" width=\"100%\"><line x1=\"20\" y1=\"10\" x2=\"20\" y2=\"70\" stroke=\"var(--ink)\" stroke-width=\"6\" stroke-linecap=\"round\"/><line x1=\"70\" y1=\"10\" x2=\"70\" y2=\"70\" stroke=\"var(--fret)\" stroke-width=\"1.5\"/><line x1=\"120\" y1=\"10\" x2=\"120\" y2=\"70\" stroke=\"var(--fret)\" stroke-width=\"1.5\"/><line x1=\"20\" y1=\"20\" x2=\"190\" y2=\"20\" stroke=\"var(--string)\"/><line x1=\"20\" y1=\"40\" x2=\"190\" y2=\"40\" stroke=\"var(--string)\"/><line x1=\"20\" y1=\"60\" x2=\"190\" y2=\"60\" stroke=\"var(--string)\"/><polyline points=\"45,20 95,40 95,60\" fill=\"none\" stroke=\"var(--band)\" stroke-width=\"34\" stroke-linecap=\"round\" stroke-linejoin=\"round\"/><circle cx=\"45\" cy=\"20\" r=\"11\" fill=\"var(--do)\" stroke=\"var(--card)\" stroke-width=\"2.5\"/><circle cx=\"95\" cy=\"40\" r=\"11\" fill=\"var(--mi)\" stroke=\"var(--mi-edge)\" stroke-width=\"1.5\"/><circle cx=\"95\" cy=\"60\" r=\"11\" fill=\"var(--so)\" stroke=\"var(--card)\" stroke-width=\"2.5\"/></svg></section>",
+      "css": ".ds-card{padding:14px 22px 10px;border-radius:var(--radius-card);background:var(--card);box-shadow:0 1px 2px color-mix(in srgb,var(--ink) 8%,transparent)}"
+    },
+    {
+      "name": "Section header",
+      "kind": "button",
+      "refersTo": "section-header",
+      "description": "Full-width sand pill with title, summary and chevron.",
+      "html": "<button class=\"ds-sh\" aria-expanded=\"false\"><span class=\"t\">Settings</span><span class=\"s\">ii-V-I · C · strings 4-3-2 · piano</span><svg viewBox=\"0 0 16 16\"><path d=\"M3.5 6 8 10.5 12.5 6\"/></svg></button>",
+      "css": ".ds-sh{font-family: var(--font);display:flex;align-items:center;gap:14px;width:100%;min-height:48px;padding:0 16px 0 20px;border:0;border-radius:999px;background:var(--sand);color:var(--ink);text-align:left;cursor:pointer;transition:background-color 160ms var(--ease-out)} .ds-sh:hover{background:var(--sand-strong)} .ds-sh:focus-visible{outline:2px solid var(--ink);outline-offset:3px} .ds-sh .t{font-weight:700;font-size:15px} .ds-sh .s{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;color:var(--ink-soft)} .ds-sh svg{flex:none;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}"
+    },
+    {
+      "name": "Progression strip",
+      "kind": "chip",
+      "refersTo": "progression-chip",
+      "description": "Chord chips; the sounding chord turns ink.",
+      "html": "<ol class=\"ds-prog\"><li><b>Dm7</b><span>ii</span></li><li class=\"on\"><b>G7</b><span>V</span></li><li><b>Cmaj7</b><span>I</span></li></ol>",
+      "css": ".ds-prog{display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0;list-style:none} .ds-prog li{font-family: var(--font);display:inline-flex;align-items:baseline;gap:6px;min-height:40px;padding:10px 16px;border-radius:999px;background:var(--sand);color:var(--ink);transition:background-color 160ms var(--ease-out),color 160ms var(--ease-out)} .ds-prog b{font-weight:700} .ds-prog span{font-size:13px;font-weight:600;color:var(--ink-soft)} .ds-prog li.on{background:var(--ink);color:var(--paper)} .ds-prog li.on span{color:var(--sand-strong)}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Classroom Solfège Chart",
+    "overview": "**Creative North Star: \"The Classroom Solfège Chart\"**\n\nThe app looks like the chart on a music-room wall. A warm paper ground, brown-black ink, and three saturated colours, each tied to one chord tone: vermilion for do, marigold for mi, cobalt for so. Every other surface is a paper, cream or sand tint of the same warm hue. When the player looks up from the guitar a metre away, the chord tones are the first thing they see because nothing else is allowed to be bright.\n\nDensity is low on purpose. The chord name is huge, the tone tiles are the size of flash cards, and the controls are fat pills you can hit between phrases. One typeface, Bricolage Grotesque, does all the work, with weight and optical size carrying the hierarchy. The neck sits on a cream card, the only raised surface in the app. Play, tempo and note names live in a bar stuck to the bottom of the window.\n\nMotion is small and musical. The metronome's three beats lift the do, mi and so tiles in turn, and a chord change sweeps the dots onto the neck from the nut upward over 220ms.",
+    "keyCharacteristics": [
+      "Three meaning colours, everything else warm neutral",
+      "One variable typeface, weight 800 for anything you read from across the room",
+      "Pills for every control, 16px card for the neck, 18px tiles for the tones",
+      "Flat paper with one hairline shadow on the neck card",
+      "A sticky transport bar at the bottom in both modes"
+    ],
+    "rules": [
+      {
+        "name": "The Three Voices Rule",
+        "body": "Do, mi and so are the only saturated colours, and each means one chord tone everywhere it appears. No other element gets a saturated fill, accent or status colour.",
+        "section": "colors"
+      },
+      {
+        "name": "The Ink Selection Rule",
+        "body": "A selected or pressed control turns ink with paper text. Selection never borrows a chord-tone colour.",
+        "section": "colors"
+      },
+      {
+        "name": "The Heavy Means Read-From-Afar Rule",
+        "body": "Weight 800 is for things the player reads from a metre away: chord name, syllables, note names, the wordmark, labels inside dots. Controls stay at 600.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Rule",
+        "body": "Numbers that sit in a row (fret numbers, BPM) use tabular figures so they don't jitter.",
+        "section": "typography"
+      },
+      {
+        "name": "The Lift Is The Beat Rule",
+        "body": "Nothing rises off the page at rest. A shadow means \"this tone, now\".",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** keep do, mi and so as the only saturated colours, each tied to its one tone.",
+      "**Do** put ink text on mi and white text on do and so.",
+      "**Do** ring mi dots with the marigold rim wherever they sit on cream.",
+      "**Do** make every control a pill: sand at rest, deep sand on hover, ink when chosen.",
+      "**Do** use weight 800 for anything read from a metre away, and tabular figures for numbers in a row.",
+      "**Do** keep the pickers and the neck in one view on desktop, and stand the neck up on phones.",
+      "**Do** honour reduced motion. The global rule cuts every animation and transition to 1ms."
+    ],
+    "donts": [
+      "**Don't** add a fourth saturated colour for status, links or decoration.",
+      "**Don't** use a chord-tone colour for selection or pressed state. That is ink's job.",
+      "**Don't** add shadows to controls or cards at rest beyond the neck card's hairline.",
+      "**Don't** add rules, borders or boxes around groups. The transport's hairline is the only one.",
+      "**Don't** introduce a second typeface or fall back to a system display face for headings.",
+      "**Don't** go dark or neon. The ground is warm paper."
+    ]
+  }
+}
