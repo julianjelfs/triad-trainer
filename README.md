@@ -12,8 +12,8 @@ Each dot is coloured by its job in the chord: red is do (the root), marigold
 is mi (the third) and blue is so (the fifth). The three tiles at the top give
 that chord's notes for each. Minor chords use the same three names, so a minor
 triad looks like its major one with the marigold dot a fret lower. The dot
-itself shows the note name, and "Note names" in the bottom bar hides it when
-you want to test yourself.
+itself shows the note name. Set Dots to Blank under Settings to hide the names
+when you want to test yourself.
 
 A sand-coloured band ties each shape's three notes together. Inversions repeat
 an octave up, so most string sets show three to five shapes. On a phone the

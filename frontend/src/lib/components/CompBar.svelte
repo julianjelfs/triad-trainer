@@ -3,7 +3,6 @@
   import type { Comper } from '../state/comper.svelte';
   import type { Trainer } from '../state/trainer.svelte';
   import BpmStepper from './BpmStepper.svelte';
-  import ToggleButton from './ToggleButton.svelte';
 
   let { trainer, comper }: { trainer: Trainer; comper: Comper } = $props();
 
@@ -47,15 +46,6 @@
 
   <BpmStepper {bpm} onChange={setBpm} />
 
-  <div class="names">
-    <ToggleButton
-      label="Note names"
-      pressed={trainer.showLabels}
-      onToggle={(on) => trainer.setShowLabels(on)}
-      small
-    />
-  </div>
-
   <div class="beats" class:counting={comper.countingIn} aria-hidden="true">
     {#each { length: BEATS_PER_BAR } as _, index (index)}
       <span class="beat" class:on={comper.beat === index}></span>
@@ -82,19 +72,26 @@
     fill: currentColor;
   }
 
-  .names {
-    margin-left: auto;
-  }
-
   .beats {
     display: flex;
     gap: 8px;
+    margin-left: auto;
   }
 
-  /* No room on a phone; the beat lights matter less than the buttons. */
+  /* One row on a phone: tighter gaps and smaller lights. */
   @media (max-width: 600px) {
+    .bar {
+      flex-wrap: nowrap;
+      gap: 8px;
+    }
+
     .beats {
-      display: none;
+      gap: 5px;
+    }
+
+    .beat {
+      width: 10px;
+      height: 10px;
     }
   }
 

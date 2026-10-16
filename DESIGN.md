@@ -160,7 +160,7 @@ components:
 
 The app looks like the chart on a music-room wall. A warm paper ground, brown-black ink, and three saturated colours, each tied to one chord tone: vermilion for do, marigold for mi, cobalt for so. Every other surface is a paper, cream or sand tint of the same warm hue. When the player looks up from the guitar a metre away, the chord tones are the first thing they see because nothing else is allowed to be bright.
 
-Density is low on purpose. The chord name is huge, the tone tiles are a one-line legend beside it, and the controls are fat pills you can hit between phrases. One typeface, Bricolage Grotesque, does all the work, with weight and optical size carrying the hierarchy. The neck sits on a cream card, the only raised surface in the app. Play, tempo and note names live in a bar stuck to the bottom of the window.
+Density is low on purpose. The chord name is huge, the tone tiles are a one-line legend beside it, and the controls are fat pills you can hit between phrases. One typeface, Bricolage Grotesque, does all the work, with weight and optical size carrying the hierarchy. The neck sits on a cream card, the only raised surface in the app. Play and tempo live in a bar stuck to the bottom of the window; rarely changed choices, note names included, live in the Settings panel.
 
 Motion is small and musical. The metronome's three beats lift the do, mi and so tiles in turn, and a chord change sweeps the dots onto the neck from the nut upward over 220ms.
 
@@ -229,7 +229,7 @@ A single centred column, max 1040px, with 32px side gutters on desktop and 16px 
 
 Picker rows are a two-column grid with a 96px label column, so every row of pills starts on the same line. Pills in a row are 6px apart and wrap. On phones the label moves above the pills.
 
-Comping keeps the same hero and neck card, adds a progression strip of chips between them, and uses the same Settings panel below the neck. Its transport holds play, BPM, note names and four beat lights.
+Comping keeps the same hero and neck card, adds a progression strip of chips between them, and uses the same Settings panel below the neck. Its transport holds play, BPM and four beat lights.
 
 Vertical rhythm is loose: 28px under the header and above the transport, 18px between hero and card, 24px above Settings, 14px between picker rows (18px on phones).
 
@@ -279,7 +279,7 @@ One sand section below the neck in both modes. Shut, it is a full-width 48px pil
 Sand chips with the chord symbol at 700 and its numeral in soft ink. The sounding chord turns ink with paper text and a deep-sand numeral. The current chord's numeral in the hero status line is a small ink badge.
 
 ### Transport
-A bar stuck to the bottom of the window, paper background, deep-sand top hairline, 12px padding plus the safe-area inset. Play, BPM stepper, Note names, then beat lights pushed right. Learn's three beat lights take do, mi, so in turn. Comping's four lights are ink, and during the count-in they show as ink rings.
+A bar stuck to the bottom of the window, paper background, deep-sand top hairline, 12px padding plus the safe-area inset. Play, BPM stepper, then beat lights pushed right. On phones it never wraps: 8px gaps and 10px lights. Learn's three beat lights take do, mi, so in turn. Comping's four lights are ink, and during the count-in they show as ink rings.
 
 ## Do's and Don'ts
 

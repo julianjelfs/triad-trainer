@@ -39,6 +39,12 @@ export const STRING_SETS: StringSet[] = [
   { indices: [3, 4, 5], label: 'Strings 3-2-1', names: ['G', 'B', 'high E'] }
 ];
 
+/** Whether the dots on the neck carry their note names. Rarely changed. */
+export const DOT_LABELS: { value: 'names' | 'blank'; label: string }[] = [
+  { value: 'names', label: 'Note names' },
+  { value: 'blank', label: 'Blank' }
+];
+
 export const QUALITIES: { value: Quality; label: string }[] = [
   { value: 'major', label: 'Major' },
   { value: 'minor', label: 'Minor' }

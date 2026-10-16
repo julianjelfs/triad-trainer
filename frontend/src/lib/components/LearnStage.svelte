@@ -1,6 +1,6 @@
 <script lang="ts">
   import { tonicName } from '../harmony';
-  import { QUALITIES, STRING_SETS } from '../music';
+  import { DOT_LABELS, QUALITIES, STRING_SETS } from '../music';
   import type { Metronome } from '../state/metronome.svelte';
   import type { Trainer } from '../state/trainer.svelte';
   import type { ChordTone } from '../types';
@@ -33,7 +33,8 @@
   let summary = $derived(
     [
       `${spelling.root} ${quality.toLowerCase()}`,
-      STRING_SETS[settings.learn_string_set].label
+      STRING_SETS[settings.learn_string_set].label,
+      ...(trainer.showLabels ? [] : ['blank dots'])
     ].join(' · ')
   );
 
@@ -77,6 +78,12 @@
       options={setOptions}
       selected={[settings.learn_string_set]}
       onToggle={(value) => trainer.set({ learn_string_set: value })}
+    />
+    <ToggleGroup
+      title="Dots"
+      options={DOT_LABELS}
+      selected={[trainer.showLabels ? 'names' : 'blank']}
+      onToggle={(value) => trainer.setShowLabels(value === 'names')}
     />
   </SettingsPanel>
 

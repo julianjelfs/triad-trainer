@@ -1,6 +1,6 @@
 <script lang="ts">
   import { PROGRESSIONS, findProgression, tonicName } from '../harmony';
-  import { STRING_SETS } from '../music';
+  import { DOT_LABELS, STRING_SETS } from '../music';
   import type { Comper } from '../state/comper.svelte';
   import type { Trainer } from '../state/trainer.svelte';
   import type { CompInstrument } from '../types';
@@ -35,7 +35,13 @@
     if (!settings) return '';
     const key = keyOptions[settings.comp_key].label;
     const sound = soundOptions.find((o) => o.value === settings.comp_instrument)?.label;
-    return [key, progression.name, STRING_SETS[settings.comp_string_set].label, sound].join(' · ');
+    return [
+      key,
+      progression.name,
+      STRING_SETS[settings.comp_string_set].label,
+      sound,
+      ...(trainer.showLabels ? [] : ['blank dots'])
+    ].join(' · ');
   });
 
   /** A new key, progression or sound is a different backing, so the old one stops. */
@@ -71,6 +77,12 @@
       options={soundOptions}
       selected={[trainer.settings.comp_instrument]}
       onToggle={(value) => changeBacking({ comp_instrument: value })}
+    />
+    <ToggleGroup
+      title="Dots"
+      options={DOT_LABELS}
+      selected={[trainer.showLabels ? 'names' : 'blank']}
+      onToggle={(value) => trainer.setShowLabels(value === 'names')}
     />
   </SettingsPanel>
 {/if}

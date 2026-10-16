@@ -2,7 +2,6 @@
   import type { Metronome } from '../state/metronome.svelte';
   import type { Trainer } from '../state/trainer.svelte';
   import BpmStepper from './BpmStepper.svelte';
-  import ToggleButton from './ToggleButton.svelte';
 
   let { trainer, metronome }: { trainer: Trainer; metronome: Metronome } = $props();
 
@@ -31,15 +30,6 @@
 
   <BpmStepper {bpm} onChange={setBpm} />
 
-  <div class="names">
-    <ToggleButton
-      label="Note names"
-      pressed={trainer.showLabels}
-      onToggle={(on) => trainer.setShowLabels(on)}
-      small
-    />
-  </div>
-
   <div class="beats" aria-hidden="true">
     {#each BEAT_TONES as tone, index (tone)}
       <span class="beat {tone}" class:on={metronome.beat === index}></span>
@@ -66,19 +56,26 @@
     fill: currentColor;
   }
 
-  .names {
-    margin-left: auto;
-  }
-
   .beats {
     display: flex;
     gap: 8px;
+    margin-left: auto;
   }
 
-  /* No room on a phone; the beat lights matter less than the buttons. */
+  /* One row on a phone: tighter gaps and smaller lights. */
   @media (max-width: 600px) {
+    .bar {
+      flex-wrap: nowrap;
+      gap: 8px;
+    }
+
     .beats {
-      display: none;
+      gap: 5px;
+    }
+
+    .beat {
+      width: 10px;
+      height: 10px;
     }
   }
 
