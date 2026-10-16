@@ -225,13 +225,13 @@ The one exception in the build is the error and notice box, which mixes do at 12
 
 ## Layout
 
-A single centred column, max 1040px, with 32px side gutters on desktop and 16px at 600px and below. The learn page runs top to bottom: header with wordmark left and the Learn/Comping control right; a hero row with the chord name and the three tone tiles (grid 1fr to 1.3fr, aligned to the bottom edge); the pickers; the full-width neck card; then the sticky transport. The pickers sit above the neck so a change and its result are on screen together at 1440×757.
+A single centred column, max 1040px, with 32px side gutters on desktop and 16px at 600px and below. The learn page runs top to bottom: header with wordmark left and the Learn/Comping control right; a hero row with the chord name and the three tone tiles (grid 1fr to 1.3fr, aligned to the bottom edge); the full-width neck card; a collapsible Settings section holding the key, quality and strings pickers, shut by default with a one-line summary; then the sticky transport.
 
 Picker rows are a two-column grid with a 96px label column, so every row of pills starts on the same line. Pills in a row are 6px apart and wrap. On phones the label moves above the pills.
 
-Comping keeps the same hero and neck card, adds a progression strip of chips between them, and puts its pickers in a collapsible Settings section below the neck. Its transport holds play, BPM, note names and four beat lights.
+Comping keeps the same hero and neck card, adds a progression strip of chips between them, and uses the same collapsible Settings section below the neck. Its transport holds play, BPM, note names and four beat lights.
 
-Vertical rhythm is loose: 28px under the header and above the transport, 18px between hero, pickers and card (24px on phones), 10 to 14px between picker rows.
+Vertical rhythm is loose: 28px under the header and above the transport, 18px between hero and card, 24px above Settings, 14px between picker rows (18px on phones).
 
 Breakpoints:
 - At 760px the hero stacks: chord name above, tiles below.
@@ -289,7 +289,7 @@ A bar stuck to the bottom of the window, paper background, deep-sand top hairlin
 - **Do** ring mi dots with the marigold rim wherever they sit on cream.
 - **Do** make every control a pill: sand at rest, deep sand on hover, ink when chosen.
 - **Do** use weight 800 for anything read from a metre away, and tabular figures for numbers in a row.
-- **Do** keep the pickers and the neck in one view on desktop, and stand the neck up on phones.
+- **Do** keep the neck directly under the chord name in both modes, with settings shut below it, and stand the neck up on phones.
 - **Do** honour reduced motion. The global rule cuts every animation and transition to 1ms.
 
 ### Don't:

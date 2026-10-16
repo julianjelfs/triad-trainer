@@ -1,6 +1,6 @@
 # Triad Trainer
 
-![A major on strings 5-4-3: do, mi and so tiles above the key pickers, and three shapes up the neck with roots in red, thirds in marigold and fifths in blue](docs/learn.png)
+![A major on strings 5-4-3: do, mi and so tiles beside the chord name, and three shapes up the neck with roots in red, thirds in marigold and fifths in blue](docs/learn.png)
 
 Guitar triad reference. Pick a key, a quality and a string set, and it shows
 every shape of that triad on the neck at once, from the nut to the fifteenth

@@ -5,6 +5,7 @@
   import type { Trainer } from '../state/trainer.svelte';
   import type { ChordTone } from '../types';
   import Fretboard from './Fretboard.svelte';
+  import SectionHeader from './SectionHeader.svelte';
   import MetronomeBar from './MetronomeBar.svelte';
     import ToggleGroup from './ToggleGroup.svelte';
   import ToneTiles from './ToneTiles.svelte';
@@ -29,6 +30,16 @@
 
   let quality = $derived(QUALITIES.find((q) => q.value === settings.learn_quality)!.label);
 
+  /** Shut by default, like comping's, so the neck sits straight under the chord. */
+  let open = $state(false);
+
+  let summary = $derived(
+    [
+      `${spelling.root} ${quality.toLowerCase()}`,
+      STRING_SETS[settings.learn_string_set].label
+    ].join(' · ')
+  );
+
   const BEAT_TONES: ChordTone[] = ['root', 'third', 'fifth'];
   let beatTone = $derived(metronome.beat >= 0 ? BEAT_TONES[metronome.beat] : null);
 </script>
@@ -45,34 +56,39 @@
     <ToneTiles {spelling} active={beatTone} />
   </section>
 
-  <section class="controls" aria-label="Choose a chord">
-    <ToggleGroup
-      title="Key"
-      options={keyOptions}
-      selected={[settings.learn_key]}
-      onToggle={(value) => trainer.set({ learn_key: value })}
-      fixedWidth
-    />
-    <div class="pair">
-      <ToggleGroup
-        title="Quality"
-        options={QUALITIES}
-        selected={[settings.learn_quality]}
-        onToggle={(value) => trainer.set({ learn_quality: value })}
-      />
-      <ToggleGroup
-        title="Strings"
-        options={setOptions}
-        selected={[settings.learn_string_set]}
-        onToggle={(value) => trainer.set({ learn_string_set: value })}
-      />
-    </div>
-  </section>
 
   <section class="card" aria-label="Every shape on the neck">
     <Fretboard shapes={trainer.learnShapes} showLabels={trainer.showLabels} {spelling} />
   </section>
 
+
+  <section class="settings">
+    <SectionHeader title="Settings" {summary} {open} onToggle={() => (open = !open)} />
+
+    {#if open}
+      <div class="groups">
+        <ToggleGroup
+          title="Key"
+          options={keyOptions}
+          selected={[settings.learn_key]}
+          onToggle={(value) => trainer.set({ learn_key: value })}
+          fixedWidth
+        />
+        <ToggleGroup
+          title="Quality"
+          options={QUALITIES}
+          selected={[settings.learn_quality]}
+          onToggle={(value) => trainer.set({ learn_quality: value })}
+        />
+        <ToggleGroup
+          title="Strings"
+          options={setOptions}
+          selected={[settings.learn_string_set]}
+          onToggle={(value) => trainer.set({ learn_string_set: value })}
+        />
+      </div>
+    {/if}
+  </section>
 
   <div class="transport">
     <MetronomeBar {trainer} {metronome} />
@@ -127,24 +143,15 @@
     box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent);
   }
 
-  .controls {
+  .settings {
+    margin-top: 24px;
+  }
+
+  .groups {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-top: 18px;
-  }
-
-  .pair {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px 40px;
-  }
-
-  /* Only the first group lines up with Key; the second sits beside it. */
-  @media (min-width: 601px) {
-    .pair > :global(.group:last-child) {
-      grid-template-columns: auto 1fr;
-    }
+    gap: 14px;
+    padding: 20px 4px 4px;
   }
 
   @media (max-width: 760px) {
@@ -160,13 +167,8 @@
       padding: 14px 10px 10px;
     }
 
-    .controls,
-    .pair {
+    .groups {
       gap: 18px;
-    }
-
-    .controls {
-      margin-top: 24px;
     }
 
   }
