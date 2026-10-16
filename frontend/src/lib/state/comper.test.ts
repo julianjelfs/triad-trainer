@@ -96,25 +96,18 @@ describe('Comper', () => {
     gaps.slice(firstFast).forEach((gap) => expect(gap).toBeCloseTo(0.5, 9));
   });
 
-  it('counts each time round the progression after the count-in', async () => {
+  it('counts in for one bar, then plays', async () => {
     const { audio } = fakeAudio();
     const comper = new Comper(audio);
 
-    // One bar at 60 bpm: a loop every four seconds, the first chord at 4.1s.
+    // One bar at 60 bpm: the count-in clicks run to 4.1s, then the first chord.
     await comper.start({ chords: chordsInKey(oneBar, 0), bpm: 60, instrument: 'piano' });
 
     vi.advanceTimersByTime(3_000);
     expect(comper.countingIn).toBe(true);
-    expect(comper.loop).toBe(0);
 
     vi.advanceTimersByTime(1_150);
     expect(comper.countingIn).toBe(false);
-    expect(comper.loop).toBe(0);
-
-    for (let loop = 1; loop <= 3; loop++) {
-      vi.advanceTimersByTime(4_000);
-      expect(comper.loop).toBe(loop);
-    }
   });
 
   it('shows each chord of the progression as its bar comes round', async () => {
@@ -143,16 +136,14 @@ describe('Comper', () => {
     const before = {
       starts: starts.length,
       clicks: clicks.length,
-      chordIndex: comper.chordIndex,
-      loop: comper.loop
+      chordIndex: comper.chordIndex
     };
     vi.advanceTimersByTime(30_000);
 
     expect({
       starts: starts.length,
       clicks: clicks.length,
-      chordIndex: comper.chordIndex,
-      loop: comper.loop
+      chordIndex: comper.chordIndex
     }).toEqual(before);
     expect(comper.beat).toBe(-1);
     expect(comper.running).toBe(false);

@@ -56,8 +56,6 @@ export class Comper {
   beat = $state(-1);
   countingIn = $state(false);
   chordIndex = $state(0);
-  /** How many full times round the progression since Start. */
-  loop = $state(0);
 
   #instrument: BackingInstrument | null = null;
   #strum = 0;
@@ -120,7 +118,6 @@ export class Comper {
     this.countingIn = true;
     this.beat = -1;
     this.chordIndex = 0;
-    this.loop = 0;
 
     this.#schedule();
     this.#pump = setInterval(() => this.#schedule(), PUMP_MS);
@@ -175,7 +172,6 @@ export class Comper {
 
     const played = beat - COUNT_IN_BEATS;
     const loopBeat = played % this.#loopBeats;
-    const loop = Math.floor(played / this.#loopBeats);
     const duration = (beats: number) => beats * this.#secondsPerBeat;
 
     for (const event of this.#eventsAt[loopBeat]) {
@@ -203,7 +199,6 @@ export class Comper {
       this.countingIn = false;
       this.beat = loopBeat % BEATS_PER_BAR;
       this.chordIndex = chordIndex;
-      this.loop = loop;
     });
   }
 

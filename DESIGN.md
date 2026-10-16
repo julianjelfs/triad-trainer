@@ -214,7 +214,7 @@ The one exception in the build is the error and notice box, which mixes do at 12
 - **Display** (800, clamp(56px, 7vw, 80px), line-height 0.85, -0.035em): the chord name in learn mode. The quality underneath is 0.42em at weight 600 in soft ink.
 - **Headline** (800, 28px, 1): the do, mi, so syllables on the tone tiles, with the note name on the same line. 22px on phones, where the root/third/fifth label is hidden.
 - **Title** (800, 18px): the wordmark. Note names on the tiles are 800 at 17px (15px on phones). The Settings panel title is 700 at 15px.
-- **Body** (400, 15px, 1.5): base text, status lines, the string-set line.
+- **Body** (400, 15px, 1.5): base text and learn mode's string-set line.
 - **Label** (600, 14px, line-height 1): pill, segmented and chip text.
 - **Caption** (600, 13px): group labels ("Key", "Quality", "Strings"), tone role words, numerals in chips, the small pill. Fret numbers and string names on the neck are 600 in soft ink.
 
@@ -276,7 +276,7 @@ A cream card holding an SVG fretboard to fret 15. Shapes are drawn as wide round
 One sand section below the neck in both modes. Shut, it is a full-width 48px pill: bold "Settings", a soft-ink one-line summary that truncates, and a chevron. Opening it rounds the corners to the 16px card radius, turns the chevron 180° and slides the pickers out inside the same panel, under a deep-sand hairline. Inside the panel, pills take the cream card colour (--pill-bg) so they read against the sand; the selected pill stays ink.
 
 ### Progression strip
-Sand chips with the chord symbol at 700 and its numeral in soft ink. The sounding chord turns ink with paper text and a deep-sand numeral. The current chord's numeral in the hero status line is a small ink badge.
+Sand chips with the chord symbol at 700 and its numeral in soft ink. The sounding chord turns ink with paper text and a deep-sand numeral.
 
 ### Transport
 A bar stuck to the bottom of the window, paper background, deep-sand top hairline, 12px padding plus the safe-area inset. Play, BPM stepper, then beat lights pushed right. On phones it never wraps: 8px gaps and 10px lights. Learn's three beat lights take do, mi, so in turn. Comping's four lights are ink, and during the count-in they show as ink rings.

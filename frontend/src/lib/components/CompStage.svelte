@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { STRING_SETS, chordShapes } from '../music';
+  import { chordShapes } from '../music';
   import type { Comper } from '../state/comper.svelte';
   import type { Trainer } from '../state/trainer.svelte';
   import Fretboard from './Fretboard.svelte';
@@ -11,7 +11,6 @@
   let stringSet = $derived(trainer.settings?.comp_string_set ?? 2);
 
   let current = $derived(chords[comper.chordIndex] ?? chords[0]);
-  let next = $derived(chords[(comper.chordIndex + 1) % chords.length]);
   let playing = $derived(comper.running && !comper.countingIn);
 
   /** The same view as learning mode: every shape of the chord that is sounding. */
@@ -28,16 +27,6 @@
       {#key current.name}
         <h1 class="chord">{current.name}</h1>
       {/key}
-      <p class="status">
-        <span class="numeral">{current.numeral}</span>
-        {#if comper.countingIn}
-          Count in…
-        {:else}
-          Next {next.name}
-        {/if}
-        · {STRING_SETS[stringSet].label.toLowerCase()}
-        {#if comper.running}· loop {comper.loop + 1}{/if}
-      </p>
     </div>
     <ToneTiles spelling={current.spelling} />
   </section>
@@ -76,23 +65,6 @@
     letter-spacing: -0.035em;
     font-variation-settings: 'opsz' 96;
     animation: chord-in 320ms var(--ease-out) backwards;
-  }
-
-  .status {
-    margin: 12px 0 0;
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--ink-soft);
-  }
-
-  .numeral {
-    margin-right: 8px;
-    padding: 3px 9px;
-    border-radius: 999px;
-    background: var(--ink);
-    color: var(--paper);
-    font-weight: 700;
-    font-size: 13px;
   }
 
   .progression {
