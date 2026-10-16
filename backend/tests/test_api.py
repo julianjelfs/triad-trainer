@@ -4,6 +4,7 @@ import sqlite3
 from concurrent.futures import ThreadPoolExecutor
 
 import pytest
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -105,3 +106,21 @@ def test_concurrent_requests_share_no_connection(client):
         responses = list(pool.map(lambda _: client.get("/api/settings"), range(12)))
 
     assert [r.status_code for r in responses] == [200] * 12
+
+
+def test_only_fingerprinted_assets_are_cached_forever(tmp_path):
+    """Icons and the manifest keep their names across builds, so a forever-cache
+    would pin a browser to the old ones."""
+    (tmp_path / "ui" / "assets").mkdir(parents=True)
+    (tmp_path / "ui" / "index.html").write_text("<!doctype html>")
+    (tmp_path / "ui" / "favicon.svg").write_text("<svg/>")
+    (tmp_path / "ui" / "assets" / "index-abc123.js").write_text("")
+
+    from app.main import UiFiles
+
+    ui = FastAPI()
+    ui.mount("/", UiFiles(directory=tmp_path / "ui", html=True))
+    with TestClient(ui) as client:
+        assert client.get("/").headers["cache-control"] == "no-cache"
+        assert client.get("/favicon.svg").headers["cache-control"] == "no-cache"
+        assert "immutable" in client.get("/assets/index-abc123.js").headers["cache-control"]

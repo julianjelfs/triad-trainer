@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import mimetypes
 import os
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -12,6 +13,10 @@ from fastapi.staticfiles import StaticFiles
 
 from . import db
 from .routers import settings
+
+# Not in every platform's table, and browsers want the right type before they
+# will offer to install the app.
+mimetypes.add_type("application/manifest+json", ".webmanifest")
 
 DEFAULT_UI_DIR = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"
 
@@ -49,19 +54,20 @@ def ui_directory() -> Path:
 class UiFiles(StaticFiles):
     """Static files with cache headers that survive a rebuild.
 
-    Vite fingerprints asset filenames, so those can be cached forever. The
-    entry HTML names them, so it must be revalidated every time: a cached
+    Vite fingerprints the filenames under assets/, so those can be cached
+    forever. Everything else keeps its name across rebuilds (the entry HTML,
+    the icons, the manifest) and must be revalidated every time: a cached
     index.html pins a browser to an old bundle, and on a device you rarely
     hard-refresh it stays pinned indefinitely.
     """
 
     def file_response(self, *args, **kwargs):
         response = super().file_response(*args, **kwargs)
-        path = str(args[0]) if args else ""
-        if path.endswith(".html"):
-            response.headers["Cache-Control"] = "no-cache"
-        else:
+        path = Path(str(args[0])) if args else Path()
+        if "assets" in path.parts:
             response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        else:
+            response.headers["Cache-Control"] = "no-cache"
         return response
 
 
