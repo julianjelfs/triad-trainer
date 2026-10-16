@@ -4,12 +4,11 @@
   import type { Comper } from '../state/comper.svelte';
   import type { Trainer } from '../state/trainer.svelte';
   import type { CompInstrument } from '../types';
-  import SectionHeader from './SectionHeader.svelte';
+  import SettingsPanel from './SettingsPanel.svelte';
   import ToggleGroup from './ToggleGroup.svelte';
 
   let { trainer, comper }: { trainer: Trainer; comper: Comper } = $props();
 
-  let open = $state(false);
 
   const progressionOptions = PROGRESSIONS.map((p) => ({ value: p.id, label: p.name }));
   const setOptions = STRING_SETS.map((set, index) => ({
@@ -47,56 +46,31 @@
 </script>
 
 {#if trainer.settings}
-  <section class="settings">
-    <SectionHeader title="Settings" {summary} {open} onToggle={() => (open = !open)} />
-
-    {#if open}
-      <div class="groups">
-        <ToggleGroup
-          title="Progression"
-          options={progressionOptions}
-          selected={[trainer.settings.comp_progression]}
-          onToggle={(value) => changeBacking({ comp_progression: value })}
-        />
-        <ToggleGroup
-          title="Key"
-          options={keyOptions}
-          selected={[trainer.settings.comp_key]}
-          onToggle={(value) => changeBacking({ comp_key: value })}
-          fixedWidth
-        />
-        <ToggleGroup
-          title="Strings"
-          options={setOptions}
-          selected={[trainer.settings.comp_string_set]}
-          onToggle={(value) => trainer.set({ comp_string_set: value })}
-        />
-        <ToggleGroup
-          title="Sound"
-          options={soundOptions}
-          selected={[trainer.settings.comp_instrument]}
-          onToggle={(value) => changeBacking({ comp_instrument: value })}
-        />
-      </div>
-    {/if}
-  </section>
+  <SettingsPanel {summary}>
+    <ToggleGroup
+      title="Progression"
+      options={progressionOptions}
+      selected={[trainer.settings.comp_progression]}
+      onToggle={(value) => changeBacking({ comp_progression: value })}
+    />
+    <ToggleGroup
+      title="Key"
+      options={keyOptions}
+      selected={[trainer.settings.comp_key]}
+      onToggle={(value) => changeBacking({ comp_key: value })}
+      fixedWidth
+    />
+    <ToggleGroup
+      title="Strings"
+      options={setOptions}
+      selected={[trainer.settings.comp_string_set]}
+      onToggle={(value) => trainer.set({ comp_string_set: value })}
+    />
+    <ToggleGroup
+      title="Sound"
+      options={soundOptions}
+      selected={[trainer.settings.comp_instrument]}
+      onToggle={(value) => changeBacking({ comp_instrument: value })}
+    />
+  </SettingsPanel>
 {/if}
-
-<style>
-  .settings {
-    margin-top: 24px;
-  }
-
-  .groups {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    padding: 20px 4px 4px;
-  }
-
-  @media (max-width: 600px) {
-    .groups {
-      gap: 18px;
-    }
-  }
-</style>

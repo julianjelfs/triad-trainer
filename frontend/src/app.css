@@ -88,7 +88,7 @@ input {
   padding: 0 16px;
   border: 0;
   border-radius: 999px;
-  background: var(--sand);
+  background: var(--pill-bg, var(--sand));
   color: var(--ink);
   font-weight: 600;
   font-size: 14px;
@@ -102,7 +102,7 @@ input {
 }
 
 .pill:hover {
-  background: var(--sand-strong);
+  background: var(--pill-hover, var(--sand-strong));
 }
 
 .pill:active {

@@ -382,12 +382,12 @@
       "css": ".ds-card{padding:14px 22px 10px;border-radius:var(--radius-card);background:var(--card);box-shadow:0 1px 2px color-mix(in srgb,var(--ink) 8%,transparent)}"
     },
     {
-      "name": "Section header",
-      "kind": "button",
-      "refersTo": "section-header",
-      "description": "Full-width sand pill with title, summary and chevron.",
-      "html": "<button class=\"ds-sh\" aria-expanded=\"false\"><span class=\"t\">Settings</span><span class=\"s\">ii-V-I · C · strings 4-3-2 · piano</span><svg viewBox=\"0 0 16 16\"><path d=\"M3.5 6 8 10.5 12.5 6\"/></svg></button>",
-      "css": ".ds-sh{font-family: var(--font);display:flex;align-items:center;gap:14px;width:100%;min-height:48px;padding:0 16px 0 20px;border:0;border-radius:999px;background:var(--sand);color:var(--ink);text-align:left;cursor:pointer;transition:background-color 160ms var(--ease-out)} .ds-sh:hover{background:var(--sand-strong)} .ds-sh:focus-visible{outline:2px solid var(--ink);outline-offset:3px} .ds-sh .t{font-weight:700;font-size:15px} .ds-sh .s{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;color:var(--ink-soft)} .ds-sh svg{flex:none;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}"
+      "name": "Settings panel",
+      "kind": "disclosure",
+      "refersTo": "settings-panel",
+      "description": "Sand section below the neck. Shut: a 48px pill with title, summary and chevron. Open: 16px radius panel with the pickers inside, pills in cream.",
+      "html": "<section class=\"ds-sp open\"><button class=\"h\" aria-expanded=\"true\"><span class=\"t\">Settings</span><span class=\"s\">A major · Strings 5-4-3</span><svg viewBox=\"0 0 16 16\"><path d=\"M3.5 6 8 10.5 12.5 6\"/></svg></button><div class=\"b\"><button class=\"pill\" aria-pressed=\"true\">A</button> <button class=\"pill\">Bb</button></div></section>",
+      "css": ".ds-sp{font-family:var(--font);--pill-bg:var(--card);--pill-hover:var(--paper);border-radius:24px;background:var(--sand);color:var(--ink)} .ds-sp.open{border-radius:var(--radius-card)} .ds-sp .h{display:flex;align-items:center;gap:14px;width:100%;min-height:48px;padding:0 18px 0 20px;border:0;background:transparent;text-align:left;cursor:pointer} .ds-sp .t{font-weight:700;font-size:15px} .ds-sp .s{flex:1;font-size:14px;color:var(--ink-soft)} .ds-sp svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2} .ds-sp.open svg{transform:rotate(180deg)} .ds-sp .b{display:flex;gap:6px;margin:0 8px;padding:18px 12px 20px;border-top:1px solid var(--sand-strong)}"
     },
     {
       "name": "Progression strip",

@@ -184,7 +184,7 @@ Warm paper and brown-black ink, with three chord-tone colours that are the only 
 ### Neutral
 - **Chart Paper** (paper): the page background, the transport bar, the browser theme colour, and text on pressed controls.
 - **Cream Card** (card): the neck card, and the 2.5px ring round do and so dots so they separate from the strings.
-- **Sand** (sand): resting fill for pills, the segmented track, the BPM stepper, the section header and progression chips.
+- **Sand** (sand): resting fill for pills, the segmented track, the BPM stepper, the Settings panel and progression chips.
 - **Deep Sand** (sand-strong): hover fill for all sand controls, unlit beat lights, the transport's top hairline and the scrollbar thumb.
 - **Brown-Black Ink** (ink): body text, pressed and selected controls, the nut, focus rings and `accent-color`.
 - **Soft Ink** (ink-soft): secondary text such as group labels, quality and string-set lines, fret numbers, string names and the "bpm" unit.
@@ -213,7 +213,7 @@ The one exception in the build is the error and notice box, which mixes do at 12
 ### Hierarchy
 - **Display** (800, clamp(56px, 7vw, 80px), line-height 0.85, -0.035em): the chord name in learn mode. The quality underneath is 0.42em at weight 600 in soft ink.
 - **Headline** (800, 28px, 1): the do, mi, so syllables on the tone tiles, with the note name on the same line. 22px on phones, where the root/third/fifth label is hidden.
-- **Title** (800, 18px): the wordmark. Note names on the tiles are 800 at 17px (15px on phones). Section header titles are 700 at 15px.
+- **Title** (800, 18px): the wordmark. Note names on the tiles are 800 at 17px (15px on phones). The Settings panel title is 700 at 15px.
 - **Body** (400, 15px, 1.5): base text, status lines, the string-set line.
 - **Label** (600, 14px, line-height 1): pill, segmented and chip text.
 - **Caption** (600, 13px): group labels ("Key", "Quality", "Strings"), tone role words, numerals in chips, the small pill. Fret numbers and string names on the neck are 600 in soft ink.
@@ -229,7 +229,7 @@ A single centred column, max 1040px, with 32px side gutters on desktop and 16px 
 
 Picker rows are a two-column grid with a 96px label column, so every row of pills starts on the same line. Pills in a row are 6px apart and wrap. On phones the label moves above the pills.
 
-Comping keeps the same hero and neck card, adds a progression strip of chips between them, and uses the same collapsible Settings section below the neck. Its transport holds play, BPM, note names and four beat lights.
+Comping keeps the same hero and neck card, adds a progression strip of chips between them, and uses the same Settings panel below the neck. Its transport holds play, BPM, note names and four beat lights.
 
 Vertical rhythm is loose: 28px under the header and above the transport, 18px between hero and card, 24px above Settings, 14px between picker rows (18px on phones).
 
@@ -250,7 +250,7 @@ Flat paper. Depth comes from tone: paper ground, cream card, sand controls. Two 
 
 ## Shapes
 
-Round and soft, with three corner sizes. Every control is a full pill (999px), including the segmented track, the BPM stepper, the section header and the progression chips. Content surfaces use larger fixed radii: 16px for the neck card, 18px for the tone tiles, 12px for notice and error boxes. Beat lights and fret dots are circles. The only line in the chrome is the 1px deep-sand hairline above the transport. On the neck itself, strings, frets and the 6px round-capped nut are drawn lines.
+Round and soft, with three corner sizes. Every control is a full pill (999px), including the segmented track, the BPM stepper, the shut Settings panel and the progression chips. Content surfaces use larger fixed radii: 16px for the neck card, 18px for the tone tiles, 12px for notice and error boxes. Beat lights and fret dots are circles. The only line in the chrome is the 1px deep-sand hairline above the transport. On the neck itself, strings, frets and the 6px round-capped nut are drawn lines.
 
 ## Components
 
@@ -272,8 +272,8 @@ Three compact tiles in a grid with 12px gaps, filled do, mi and so, padded 12px 
 ### Neck card and fretboard
 A cream card holding an SVG fretboard to fret 15. Shapes are drawn as wide round-capped band strokes with chord-tone dots on top: do and so ringed in cream, mi ringed in marigold rim. Note names inside dots are weight 800 in each tone's on-colour. On a chord change, dots scale in from 0.55 with delays proportional to fret, a 220ms sweep up the neck, and the bands fade in over 420ms.
 
-### Section header
-A full-width sand pill, 48px tall: bold title, a soft-ink one-line summary that truncates, and a chevron that turns 180° when open. Used for comping's Settings.
+### Settings panel
+One sand section below the neck in both modes. Shut, it is a full-width 48px pill: bold "Settings", a soft-ink one-line summary that truncates, and a chevron. Opening it rounds the corners to the 16px card radius, turns the chevron 180° and slides the pickers out inside the same panel, under a deep-sand hairline. Inside the panel, pills take the cream card colour (--pill-bg) so they read against the sand; the selected pill stays ink.
 
 ### Progression strip
 Sand chips with the chord symbol at 700 and its numeral in soft ink. The sounding chord turns ink with paper text and a deep-sand numeral. The current chord's numeral in the hero status line is a small ink badge.

@@ -5,9 +5,9 @@
   import type { Trainer } from '../state/trainer.svelte';
   import type { ChordTone } from '../types';
   import Fretboard from './Fretboard.svelte';
-  import SectionHeader from './SectionHeader.svelte';
+  import SettingsPanel from './SettingsPanel.svelte';
   import MetronomeBar from './MetronomeBar.svelte';
-    import ToggleGroup from './ToggleGroup.svelte';
+  import ToggleGroup from './ToggleGroup.svelte';
   import ToneTiles from './ToneTiles.svelte';
 
   let { trainer, metronome }: { trainer: Trainer; metronome: Metronome } = $props();
@@ -29,9 +29,6 @@
   );
 
   let quality = $derived(QUALITIES.find((q) => q.value === settings.learn_quality)!.label);
-
-  /** Shut by default, like comping's, so the neck sits straight under the chord. */
-  let open = $state(false);
 
   let summary = $derived(
     [
@@ -61,34 +58,27 @@
     <Fretboard shapes={trainer.learnShapes} showLabels={trainer.showLabels} {spelling} />
   </section>
 
-
-  <section class="settings">
-    <SectionHeader title="Settings" {summary} {open} onToggle={() => (open = !open)} />
-
-    {#if open}
-      <div class="groups">
-        <ToggleGroup
-          title="Key"
-          options={keyOptions}
-          selected={[settings.learn_key]}
-          onToggle={(value) => trainer.set({ learn_key: value })}
-          fixedWidth
-        />
-        <ToggleGroup
-          title="Quality"
-          options={QUALITIES}
-          selected={[settings.learn_quality]}
-          onToggle={(value) => trainer.set({ learn_quality: value })}
-        />
-        <ToggleGroup
-          title="Strings"
-          options={setOptions}
-          selected={[settings.learn_string_set]}
-          onToggle={(value) => trainer.set({ learn_string_set: value })}
-        />
-      </div>
-    {/if}
-  </section>
+  <SettingsPanel {summary}>
+    <ToggleGroup
+      title="Key"
+      options={keyOptions}
+      selected={[settings.learn_key]}
+      onToggle={(value) => trainer.set({ learn_key: value })}
+      fixedWidth
+    />
+    <ToggleGroup
+      title="Quality"
+      options={QUALITIES}
+      selected={[settings.learn_quality]}
+      onToggle={(value) => trainer.set({ learn_quality: value })}
+    />
+    <ToggleGroup
+      title="Strings"
+      options={setOptions}
+      selected={[settings.learn_string_set]}
+      onToggle={(value) => trainer.set({ learn_string_set: value })}
+    />
+  </SettingsPanel>
 
   <div class="transport">
     <MetronomeBar {trainer} {metronome} />
@@ -143,17 +133,6 @@
     box-shadow: 0 1px 2px color-mix(in srgb, var(--ink) 8%, transparent);
   }
 
-  .settings {
-    margin-top: 24px;
-  }
-
-  .groups {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    padding: 20px 4px 4px;
-  }
-
   @media (max-width: 760px) {
     .hero {
       grid-template-columns: 1fr;
@@ -167,9 +146,6 @@
       padding: 14px 10px 10px;
     }
 
-    .groups {
-      gap: 18px;
-    }
 
   }
 </style>
