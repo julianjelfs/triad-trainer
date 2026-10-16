@@ -240,7 +240,7 @@
       },
       "body": {
         "displayName": "Body",
-        "purpose": "Base text and learn mode's string-set line."
+        "purpose": "Base text."
       },
       "label": {
         "displayName": "Control label",

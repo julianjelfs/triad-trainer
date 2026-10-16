@@ -46,10 +46,7 @@
   <section class="hero">
     <h1 class="chord">
       {spelling.root}
-      <span class="quality">
-        {quality.toLowerCase()}
-        <span class="strings">{STRING_SETS[settings.learn_string_set].label.toLowerCase()}</span>
-      </span>
+      <span class="quality">{quality.toLowerCase()}</span>
     </h1>
     <ToneTiles {spelling} active={beatTone} />
   </section>
@@ -121,15 +118,6 @@
     font-size: 0.42em;
     letter-spacing: -0.015em;
     color: var(--ink-soft);
-  }
-
-  .strings {
-    margin-left: 10px;
-    font-weight: 500;
-    font-size: 15px;
-    letter-spacing: 0;
-    color: var(--ink-soft);
-    font-variation-settings: 'opsz' 14;
   }
 
   .card {

@@ -187,7 +187,7 @@ Warm paper and brown-black ink, with three chord-tone colours that are the only 
 - **Sand** (sand): resting fill for pills, the segmented track, the BPM stepper, the Settings panel and progression chips.
 - **Deep Sand** (sand-strong): hover fill for all sand controls, unlit beat lights, the transport's top hairline and the scrollbar thumb.
 - **Brown-Black Ink** (ink): body text, pressed and selected controls, the nut, focus rings and `accent-color`.
-- **Soft Ink** (ink-soft): secondary text such as group labels, quality and string-set lines, fret numbers, string names and the "bpm" unit.
+- **Soft Ink** (ink-soft): secondary text such as group labels, the quality under the chord name, fret numbers, string names and the "bpm" unit.
 
 ### Neck
 - **String Brown** (string): the six strings, drawn thicker toward low E.
@@ -214,7 +214,7 @@ The one exception in the build is the error and notice box, which mixes do at 12
 - **Display** (800, clamp(56px, 7vw, 80px), line-height 0.85, -0.035em): the chord name in learn mode. The quality underneath is 0.42em at weight 600 in soft ink.
 - **Headline** (800, 28px, 1): the do, mi, so syllables on the tone tiles, with the note name on the same line. 22px on phones, where the root/third/fifth label is hidden.
 - **Title** (800, 18px): the wordmark. Note names on the tiles are 800 at 17px (15px on phones). The Settings panel title is 700 at 15px.
-- **Body** (400, 15px, 1.5): base text and learn mode's string-set line.
+- **Body** (400, 15px, 1.5): base text.
 - **Label** (600, 14px, line-height 1): pill, segmented and chip text.
 - **Caption** (600, 13px): group labels ("Key", "Quality", "Strings"), tone role words, numerals in chips, the small pill. Fret numbers and string names on the neck are 600 in soft ink.
 
