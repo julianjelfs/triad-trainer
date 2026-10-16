@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { NoteStart } from '../audio';
-import { ZONE_ANCHORS, chordsInKey, findProgression, type Progression } from '../harmony';
+import { chordsInKey, findProgression, type Progression } from '../harmony';
 import { COUNT_IN_BEATS, Comper, START_DELAY_S, type ComperAudio } from './comper.svelte';
 
 /**
@@ -96,8 +96,7 @@ describe('Comper', () => {
     gaps.slice(firstFast).forEach((gap) => expect(gap).toBeCloseTo(0.5, 9));
   });
 
-  // Invariant 7
-  it('climbs one zone each time round the progression and wraps at the top', async () => {
+  it('counts each time round the progression after the count-in', async () => {
     const { audio } = fakeAudio();
     const comper = new Comper(audio);
 
@@ -106,16 +105,15 @@ describe('Comper', () => {
 
     vi.advanceTimersByTime(3_000);
     expect(comper.countingIn).toBe(true);
-    expect(comper.zoneIndex).toBe(0);
+    expect(comper.loop).toBe(0);
 
     vi.advanceTimersByTime(1_150);
     expect(comper.countingIn).toBe(false);
-    expect(comper.zoneIndex).toBe(0);
+    expect(comper.loop).toBe(0);
 
-    for (let loop = 1; loop <= ZONE_ANCHORS.length * 2; loop++) {
+    for (let loop = 1; loop <= 3; loop++) {
       vi.advanceTimersByTime(4_000);
       expect(comper.loop).toBe(loop);
-      expect(comper.zoneIndex).toBe(loop % ZONE_ANCHORS.length);
     }
   });
 

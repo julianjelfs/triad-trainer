@@ -2,43 +2,25 @@
   import CompBar from './lib/components/CompBar.svelte';
   import CompSettings from './lib/components/CompSettings.svelte';
   import CompStage from './lib/components/CompStage.svelte';
-  import CurrentShape from './lib/components/CurrentShape.svelte';
+  import LearnStage from './lib/components/LearnStage.svelte';
   import MetronomeBar from './lib/components/MetronomeBar.svelte';
-  import PracticeLog from './lib/components/PracticeLog.svelte';
-  import SettingsPanel from './lib/components/SettingsPanel.svelte';
   import ToggleButton from './lib/components/ToggleButton.svelte';
   import { Comper } from './lib/state/comper.svelte';
   import { Metronome } from './lib/state/metronome.svelte';
   import { trainer } from './lib/state/trainer.svelte';
-  import { VoiceCommands } from './lib/state/voice.svelte';
   import type { Mode } from './lib/types';
   import { onDestroy, onMount } from 'svelte';
 
-  const voice = new VoiceCommands(() => trainer.nextPosition());
-
-  // The metronome drives the drill: it restarts the cycle, steps it on each bar
-  // line, and banks whatever was played when it stops. Voice stepping is for
-  // the phase before that, and the mic would only hear the clicks, so counting
-  // and listening never run at once.
-  const metronome = new Metronome({
-    onStart: () => {
-      voice.stop();
-      trainer.restartCycle();
-    },
-    onBar: () => trainer.advance(),
-    onStop: () => trainer.flushPlayed()
-  });
-
+  const metronome = new Metronome();
   const comper = new Comper();
 
-  let mode = $derived<Mode>(trainer.settings?.mode ?? 'drill');
+  let mode = $derived<Mode>(trainer.settings?.mode ?? 'learn');
 
   /** Only one thing makes sound at a time, so leaving a mode silences it. */
   function switchMode(next: Mode) {
     if (next === mode) return;
     metronome.stop();
     comper.stop();
-    voice.stop();
     trainer.setMode(next);
   }
 
@@ -46,7 +28,6 @@
   onDestroy(() => {
     metronome.stop();
     comper.stop();
-    voice.stop();
   });
 </script>
 
@@ -54,21 +35,21 @@
   <header>
     <div class="top">
       <div class="modes">
-        <ToggleButton label="Drill" pressed={mode === 'drill'} onToggle={() => switchMode('drill')} small />
+        <ToggleButton label="Learn" pressed={mode === 'learn'} onToggle={() => switchMode('learn')} small />
         <ToggleButton label="Comping" pressed={mode === 'comp'} onToggle={() => switchMode('comp')} small />
       </div>
       <span class="strapline">
-        {mode === 'drill' ? 'Every key · four string sets' : 'Real changes · the whole neck'}
+        {mode === 'learn' ? 'One chord · every shape' : 'Real changes · the whole neck'}
       </span>
     </div>
     <h1>Triad Trainer</h1>
     <p class="subtitle">
-      {#if mode === 'drill'}
-        Root, first inversion, second inversion — every key, four string sets. Say the note before you
-        play it.
+      {#if mode === 'learn'}
+        Pick a key, a quality and a string set, and see every shape of that triad on the neck. Red
+        is do, blue is mi, amber is so.
       {:else}
-        Pick a key and a progression, and it plays the changes. You play triads over them, a zone of
-        the neck at a time.
+        Pick a key and a progression, and it plays the changes. The neck shows every shape of the
+        chord that is sounding.
       {/if}
     </p>
   </header>
@@ -77,6 +58,8 @@
 
   {#if trainer.loading}
     <p class="loading">Loading…</p>
+  {:else if !trainer.settings}
+    <!-- Nothing to draw without settings; the notice below says why. -->
   {:else if mode === 'comp'}
     <CompSettings {trainer} {comper} />
     <div class="rule"></div>
@@ -86,16 +69,10 @@
 
     <CompBar {trainer} {comper} />
   {:else}
-    <SettingsPanel {trainer} />
-    <div class="rule"></div>
-
-    <CurrentShape {trainer} {metronome} {voice} />
+    <LearnStage {trainer} />
     <div class="rule"></div>
 
     <MetronomeBar {trainer} {metronome} />
-    <div class="rule"></div>
-
-    <PracticeLog {trainer} />
   {/if}
 
   <div class="notice">{trainer.notice}</div>

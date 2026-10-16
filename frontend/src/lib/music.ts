@@ -2,12 +2,9 @@
  * Guitar triad theory. Pure functions, no DOM, no network — the backend never
  * needs to know any of this, it only deals in the item's four identifying fields.
  */
-import type { ChordTone, Drill, DrillItem, Inversion, Quality, Shape, TriadItem } from './types';
+import type { ChordItem, ChordTone, Inversion, Quality, Shape, TriadItem } from './types';
 
 export const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-
-/** Every root as a pitch class, 0 = C. */
-export const ALL_ROOTS = NOTE_NAMES.map((_, index) => index);
 
 /** Open-string pitches as MIDI numbers, index 0..5 = low E, A, D, G, B, high E. */
 const OPEN_MIDI = [40, 45, 50, 55, 59, 64];
@@ -63,16 +60,19 @@ const TONE_ORDER: Record<Inversion, ChordTone[]> = {
   second: ['fifth', 'root', 'third']
 };
 
+/**
+ * Movable-do name for each chord tone. Minor triads use the same three, so the
+ * colours mark the tone's job in the chord and the note name shows the flat
+ * third.
+ */
+export const SOLFEGE: Record<ChordTone, string> = { root: 'do', third: 'mi', fifth: 'so' };
+
 export function inversionLabel(inversion: Inversion): string {
   return INVERSIONS.find((i) => i.value === inversion)!.label;
 }
 
 export function noteName(pitchClass: number): string {
   return NOTE_NAMES[pitchClass];
-}
-
-export function describe(item: TriadItem): string {
-  return `${noteName(item.root_pc)} ${item.quality} — ${inversionLabel(item.inversion)}`;
 }
 
 /**
@@ -122,34 +122,33 @@ function shapeAt(item: TriadItem, frets: number[]): Shape {
   return { item, frets, order: TONE_ORDER[item.inversion], tones: chordTones(item) };
 }
 
-/** Lowest fret the shape reaches; what the cycle is ordered by. */
+/** Lowest fret the shape reaches. */
 export function shapePosition(shape: Shape): number {
   return Math.min(...shape.frets);
 }
 
-/** How a position is named wherever it can be picked: on the neck, or below it. */
+/** How a shape is named for screen readers: "First inversion, fret 2". */
 export function positionLabel(shape: Shape): string {
   const fret = shapePosition(shape);
   return `${inversionLabel(shape.item.inversion)}, ${fret === 0 ? 'open' : `fret ${fret}`}`;
 }
 
 /**
- * Every playable position of the given inversions, ordered up the neck.
+ * Every playable shape of a chord on its string set, ordered up the neck.
  *
  * Each inversion repeats an octave higher until it runs off the end of the
- * neck, so a drill walks the same three shapes through two or so octaves
- * before it wraps back to the bottom.
+ * neck, so this is the three inversions laid end to end through two or so
+ * octaves.
  */
-export function buildDrill(item: DrillItem, inversions: Inversion[]): Drill {
-  const positions: Shape[] = [];
+export function chordShapes(item: ChordItem): Shape[] {
+  const shapes: Shape[] = [];
 
-  for (const inversion of inversions) {
+  for (const inversion of ALL_INVERSIONS) {
     const triad: TriadItem = { ...item, inversion };
     for (const frets of neckPositions(triad)) {
-      positions.push(shapeAt(triad, frets));
+      shapes.push(shapeAt(triad, frets));
     }
   }
 
-  positions.sort((a, b) => shapePosition(a) - shapePosition(b));
-  return { item, positions };
+  return shapes.sort((a, b) => shapePosition(a) - shapePosition(b));
 }

@@ -11,7 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from . import db
-from .routers import practice, settings
+from .routers import settings
 
 DEFAULT_UI_DIR = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"
 
@@ -34,7 +34,6 @@ app.add_middleware(
 )
 
 app.include_router(settings.router)
-app.include_router(practice.router)
 
 
 @app.get("/api/health")

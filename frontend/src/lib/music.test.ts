@@ -1,15 +1,35 @@
 import { describe, expect, it } from 'vitest';
-import { buildDrill, shapePosition } from './music';
-import type { DrillItem, Inversion } from './types';
+import { ALL_INVERSIONS, chordShapes } from './music';
+import type { ChordItem, Inversion } from './types';
 
-const ALL_INVERSIONS: Inversion[] = ['root', 'first', 'second'];
+/** Open-string MIDI numbers, low E through high E. */
+const OPEN_MIDI = [40, 45, 50, 55, 59, 64];
+const STRING_SETS = [
+  [0, 1, 2],
+  [1, 2, 3],
+  [2, 3, 4],
+  [3, 4, 5]
+];
 
 /** C major on strings 4-3-2. */
-const cMajor432: DrillItem = { root_pc: 0, quality: 'major', string_set: 2 };
+const cMajor432: ChordItem = { root_pc: 0, quality: 'major', string_set: 2 };
 
-describe('buildDrill', () => {
-  it('walks the neck from the lowest position upwards', () => {
-    const { positions } = buildDrill(cMajor432, ALL_INVERSIONS);
+/** Every chord learning mode can show: 12 keys, 2 qualities, 4 string sets. */
+function everyChord(): ChordItem[] {
+  return Array.from({ length: 12 }, (_, root_pc) =>
+    (['major', 'minor'] as const).flatMap((quality) =>
+      [0, 1, 2, 3].map((string_set) => ({ root_pc, quality, string_set }))
+    )
+  ).flat();
+}
+
+function only(item: ChordItem, inversion: Inversion) {
+  return chordShapes(item).filter((shape) => shape.item.inversion === inversion);
+}
+
+describe('chordShapes', () => {
+  it('lays C major on 4-3-2 out up the neck, lowest first', () => {
+    const positions = chordShapes(cMajor432);
 
     expect(positions.map((p) => [p.item.inversion, p.frets])).toEqual([
       ['first', [2, 0, 1]],
@@ -19,45 +39,49 @@ describe('buildDrill', () => {
     ]);
   });
 
-  it('orders every drill by position, whatever order the inversions arrive in', () => {
-    const shuffled = buildDrill(cMajor432, ['second', 'root', 'first']);
-    const positions = shuffled.positions.map(shapePosition);
-
-    expect(positions).toEqual([...positions].sort((a, b) => a - b));
+  it('shows every inversion at least once, all between the nut and fret 15', () => {
+    for (const item of everyChord()) {
+      const shapes = chordShapes(item);
+      const label = JSON.stringify(item);
+      for (const inversion of ALL_INVERSIONS) {
+        expect(shapes.some((shape) => shape.item.inversion === inversion), label).toBe(true);
+      }
+      for (const shape of shapes) {
+        expect(Math.min(...shape.frets), label).toBeGreaterThanOrEqual(0);
+        expect(Math.max(...shape.frets), label).toBeLessThanOrEqual(15);
+      }
+    }
   });
 
-  it('only includes the inversions that are enabled', () => {
-    const { positions } = buildDrill(cMajor432, ['root']);
-
-    expect(positions.map((p) => p.frets)).toEqual([[10, 9, 8]]);
+  it('labels each dot with the chord tone it really sounds, so its colour is right', () => {
+    for (const item of everyChord()) {
+      for (const shape of chordShapes(item)) {
+        shape.frets.forEach((fret, i) => {
+          const sounding = (OPEN_MIDI[STRING_SETS[item.string_set][i]] + fret) % 12;
+          expect(shape.tones[shape.order[i]], JSON.stringify(shape)).toBe(sounding);
+        });
+        expect(shape.tones.root).toBe(item.root_pc);
+      }
+    }
   });
 
   it('keeps D major root position at the twelfth fret, not stretched off the nut', () => {
     // D on the open D string is pitch-ascending with F# and A above it, but the
     // shape spans eleven frets. The playable voicing is the one an octave up.
-    const { positions } = buildDrill({ root_pc: 2, quality: 'major', string_set: 2 }, ['root']);
+    const positions = only({ root_pc: 2, quality: 'major', string_set: 2 }, 'root');
 
     expect(positions.map((p) => p.frets)).toEqual([[12, 11, 10]]);
   });
 
   it('voices each triad closed and within reach, every note above the one below it', () => {
-    // Open-string MIDI numbers, low E through high E.
-    const openMidi = [40, 45, 50, 55, 59, 64];
-    const stringSets = [
-      [0, 1, 2],
-      [1, 2, 3],
-      [2, 3, 4],
-      [3, 4, 5]
-    ];
-
     for (let root = 0; root < 12; root++) {
       for (const quality of ['major', 'minor'] as const) {
         for (let stringSet = 0; stringSet < 4; stringSet++) {
-          const { positions } = buildDrill({ root_pc: root, quality, string_set: stringSet }, ALL_INVERSIONS);
+          const positions = chordShapes({ root_pc: root, quality, string_set: stringSet });
           expect(positions.length).toBeGreaterThanOrEqual(3);
 
           for (const shape of positions) {
-            const pitches = shape.frets.map((fret, i) => openMidi[stringSets[stringSet][i]] + fret);
+            const pitches = shape.frets.map((fret, i) => OPEN_MIDI[STRING_SETS[stringSet][i]] + fret);
             expect(pitches[0]).toBeLessThan(pitches[1]);
             expect(pitches[1]).toBeLessThan(pitches[2]);
             expect(Math.max(...shape.frets)).toBeLessThanOrEqual(15);
@@ -90,8 +114,7 @@ describe('buildDrill', () => {
         for (const inversion of ALL_INVERSIONS) {
           const grips = new Set<string>();
           for (let root = 0; root < 12; root++) {
-            const drill = buildDrill({ root_pc: root, quality, string_set: stringSet }, [inversion]);
-            for (const shape of drill.positions) {
+            for (const shape of only({ root_pc: root, quality, string_set: stringSet }, inversion)) {
               const lowest = Math.min(...shape.frets);
               grips.add(shape.frets.map((fret) => fret - lowest).join('-'));
             }
@@ -101,13 +124,5 @@ describe('buildDrill', () => {
         }
       }
     }
-  });
-
-  it('puts the right chord tones on the right strings for each inversion', () => {
-    const { positions } = buildDrill(cMajor432, ALL_INVERSIONS);
-    const rootPosition = positions.find((p) => p.item.inversion === 'root')!;
-
-    expect(rootPosition.order).toEqual(['root', 'third', 'fifth']);
-    expect(rootPosition.tones).toEqual({ root: 0, third: 4, fifth: 7 });
   });
 });

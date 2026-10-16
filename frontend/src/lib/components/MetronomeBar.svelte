@@ -12,7 +12,7 @@
   function onBpmInput(value: string) {
     const parsed = Number.parseInt(value, 10);
     if (Number.isNaN(parsed) || parsed < MIN_BPM || parsed > MAX_BPM) return;
-    trainer.setBpm(parsed);
+    trainer.set({ bpm: parsed });
     metronome.retempo(parsed);
   }
 </script>

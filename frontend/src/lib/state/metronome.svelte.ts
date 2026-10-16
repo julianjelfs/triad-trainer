@@ -1,15 +1,7 @@
-/** Three-beat metronome — one beat per note of the triad, one bar per shape. */
+/** Three-beat metronome, one beat per note of the triad. */
 import { audioContext, playClick } from '../audio';
 
 const BEATS = 3;
-
-export interface MetronomeHandlers {
-  /** Counting has begun; the drill should go back to its lowest position. */
-  onStart?: () => void;
-  /** A bar has finished. Fires on beat 1 of every bar except the first. */
-  onBar?: () => void;
-  onStop?: () => void;
-}
 
 export class Metronome {
   running = $state(false);
@@ -20,17 +12,12 @@ export class Metronome {
 
   #timer: ReturnType<typeof setInterval> | null = null;
   #bpm = 60;
-  #barsStarted = 0;
-
-  constructor(private handlers: MetronomeHandlers = {}) {}
 
   start(bpm: number) {
     this.#clearTimer();
     this.#bpm = bpm;
     this.running = true;
     this.beat = -1;
-    this.#barsStarted = 0;
-    this.handlers.onStart?.();
     this.#tick();
     this.#timer = setInterval(() => this.#tick(), 60_000 / bpm);
   }
@@ -40,7 +27,6 @@ export class Metronome {
     this.#clearTimer();
     this.running = false;
     this.beat = -1;
-    this.handlers.onStop?.();
   }
 
   toggle(bpm: number) {
@@ -60,10 +46,6 @@ export class Metronome {
 
   #tick() {
     this.beat = (this.beat + 1) % BEATS;
-    if (this.beat === 0) {
-      if (this.#barsStarted > 0) this.handlers.onBar?.();
-      this.#barsStarted += 1;
-    }
     const ctx = audioContext();
     playClick(ctx, ctx.currentTime, this.beat === 0);
   }

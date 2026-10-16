@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Nightly snapshot of the practice database, taken on the Pi.
+# Nightly snapshot of the settings database, taken on the Pi.
 set -euo pipefail
 
 DB="${TRIADS_DB_PATH:-/home/julian_jelfs/triad-trainer/backend/triads.db}"

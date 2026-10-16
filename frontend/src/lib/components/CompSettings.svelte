@@ -37,9 +37,9 @@
   });
 
   /** A new key, progression or sound is a different backing, so the old one stops. */
-  function changeBacking(patch: Parameters<Trainer['setComp']>[0]) {
+  function changeBacking(patch: Parameters<Trainer["set"]>[0]) {
     comper.stop();
-    trainer.setComp(patch);
+    trainer.set(patch);
   }
 </script>
 
@@ -66,7 +66,7 @@
           title="String set"
           options={setOptions}
           selected={[trainer.settings.comp_string_set]}
-          onToggle={(value) => trainer.setComp({ comp_string_set: value })}
+          onToggle={(value) => trainer.set({ comp_string_set: value })}
         />
         <ToggleGroup
           title="Sound"

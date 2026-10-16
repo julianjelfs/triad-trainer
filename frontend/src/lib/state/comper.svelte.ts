@@ -1,7 +1,7 @@
 /**
  * Plays a progression round and round for you to comp over.
  *
- * Unlike the drill's metronome, nothing here is timed by `setInterval` alone.
+ * Unlike learning mode's metronome, nothing here is timed by `setInterval` alone.
  * A short interval looks a tenth of a second ahead and books every note that
  * falls inside that window on the audio clock, so beats land where the
  * arithmetic says they should however long it runs. The screen follows the
@@ -13,7 +13,7 @@ import {
   playClick,
   type BackingInstrument
 } from '../audio';
-import { BEATS_PER_BAR, ZONE_ANCHORS, timeline, type CompEvent, type KeyChord } from '../harmony';
+import { BEATS_PER_BAR, timeline, type CompEvent, type KeyChord } from '../harmony';
 import type { CompInstrument } from '../types';
 
 /** One bar of clicks before the first chord. */
@@ -58,8 +58,6 @@ export class Comper {
   chordIndex = $state(0);
   /** How many full times round the progression since Start. */
   loop = $state(0);
-  /** Which of the fret zones this loop is played around. */
-  zoneIndex = $derived(this.loop % ZONE_ANCHORS.length);
 
   #instrument: BackingInstrument | null = null;
   #strum = 0;

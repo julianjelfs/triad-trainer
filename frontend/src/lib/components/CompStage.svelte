@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { ZONE_ANCHORS, nearestShape } from '../harmony';
-  import { STRING_SETS } from '../music';
+  import { STRING_SETS, chordShapes } from '../music';
   import type { Comper } from '../state/comper.svelte';
   import type { Trainer } from '../state/trainer.svelte';
   import Fretboard from './Fretboard.svelte';
   import ToggleButton from './ToggleButton.svelte';
+  import ToneLegend from './ToneLegend.svelte';
 
   let { trainer, comper }: { trainer: Trainer; comper: Comper } = $props();
 
@@ -12,32 +12,23 @@
   let stringSet = $derived(trainer.settings?.comp_string_set ?? 2);
 
   let current = $derived(chords[comper.chordIndex] ?? chords[0]);
-  let nextIndex = $derived((comper.chordIndex + 1) % chords.length);
-  let next = $derived(chords[nextIndex]);
+  let next = $derived(chords[(comper.chordIndex + 1) % chords.length]);
 
-  let anchor = $derived(ZONE_ANCHORS[comper.zoneIndex]);
-
-  /**
-   * The last chord of a loop leads into the first chord of the next one, which
-   * is played in the next zone up. The ghost should be waiting there.
-   */
-  let nextAnchor = $derived(
-    comper.running && !comper.countingIn && nextIndex === 0
-      ? ZONE_ANCHORS[(comper.zoneIndex + 1) % ZONE_ANCHORS.length]
-      : anchor
+  /** The same view as learning mode: every shape of the chord that is sounding. */
+  let shapes = $derived(
+    current
+      ? chordShapes({ root_pc: current.root_pc, quality: current.quality, string_set: stringSet })
+      : []
   );
-
-  let shape = $derived(current ? nearestShape(current, stringSet, anchor) : null);
-  let ghost = $derived(next ? nearestShape(next, stringSet, nextAnchor) : null);
 </script>
 
-{#if current && shape}
+{#if current}
   <section class="comp">
     <div class="chord">
       {current.name}<span class="numeral">&nbsp;{current.numeral}</span>
     </div>
     <div class="meta">
-      {comper.countingIn ? 'Count in' : `Next ${next.name}`} · around fret {anchor} ·
+      {comper.countingIn ? 'Count in' : `Next ${next.name}`} ·
       {STRING_SETS[stringSet].label}
       {#if comper.running}· loop {comper.loop + 1}{/if}
     </div>
@@ -51,16 +42,11 @@
     </ol>
 
     <div class="diagram">
-      <Fretboard
-        {shape}
-        ghosts={ghost ? [ghost] : []}
-        showLabels={trainer.showLabels}
-        spelling={current.spelling}
-        ghostSpellings={next ? [next.spelling] : []}
-      />
+      <Fretboard {shapes} showLabels={trainer.showLabels} spelling={current.spelling} />
     </div>
 
     <div class="controls">
+      <ToneLegend spelling={current.spelling} />
       <ToggleButton
         label="Note names"
         pressed={trainer.showLabels}
@@ -70,9 +56,8 @@
     </div>
 
     <p class="helper">
-      Play a triad for each chord as it comes round. The solid shape is the nearest one to the
-      zone, and the faint one is where the next chord is waiting. Every time round the progression
-      the zone moves up two frets, so a full lap takes you up the whole neck.
+      Play a triad for each chord as it comes round. The neck shows every shape of the chord that
+      is sounding, so pick whichever one is closest to where your hand already is.
     </p>
 
     {#if comper.error}
@@ -137,7 +122,10 @@
 
   .controls {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
     margin: 14px 0 12px;
   }
 

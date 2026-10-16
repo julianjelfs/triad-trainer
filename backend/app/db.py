@@ -10,52 +10,16 @@ from pathlib import Path
 
 DEFAULT_DB_PATH = Path(__file__).resolve().parent.parent / "triads.db"
 
+# Older databases also hold setting_selection and practice_event tables from
+# the drill. Nothing reads them any more, but they are left in place rather
+# than dropped, so the practice history survives on the Pi.
 SCHEMA = """
--- One row per enabled option. A missing row means the option is switched off.
-CREATE TABLE IF NOT EXISTS setting_selection (
-    category TEXT NOT NULL,
-    value    TEXT NOT NULL,
-    PRIMARY KEY (category, value)
-);
-
--- Scalar preferences that are not on/off lists (bpm, label visibility, ...).
+-- One row per preference. A missing key means the default in schemas.Settings.
 CREATE TABLE IF NOT EXISTS preference (
     key   TEXT PRIMARY KEY,
     value TEXT NOT NULL
 );
-
--- Append-only log: one row per shape the player marked as done.
-CREATE TABLE IF NOT EXISTS practice_event (
-    id           INTEGER PRIMARY KEY AUTOINCREMENT,
-    root_pc      INTEGER NOT NULL,
-    quality      TEXT    NOT NULL,
-    string_set   INTEGER NOT NULL,
-    inversion    TEXT    NOT NULL,
-    practised_at TEXT    NOT NULL
-);
-
-CREATE INDEX IF NOT EXISTS practice_event_item
-    ON practice_event (root_pc, quality, string_set, inversion);
 """
-
-# Everything on, which is what the original single-file app started with.
-DEFAULT_SELECTIONS: dict[str, list[str]] = {
-    "quality": ["major"],
-    "set": ["0", "1", "2", "3"],
-    "inversion": ["root", "first", "second"],
-    "root": [str(pc) for pc in range(12)],
-}
-
-DEFAULT_PREFERENCES: dict[str, str] = {
-    "bpm": "60",
-    "show_labels": "1",
-    "mode": "drill",
-    "comp_key": "7",
-    "comp_progression": "I-V-vi-IV",
-    "comp_string_set": "2",
-    "comp_instrument": "piano",
-    "comp_bpm": "80",
-}
 
 
 def database_path() -> Path:
@@ -78,19 +42,9 @@ def connect(path: Path | None = None) -> sqlite3.Connection:
 
 
 def initialise(path: Path | None = None) -> None:
-    """Create the schema and seed defaults if the database is empty."""
+    """Create the schema if it is missing."""
     with connect(path) as conn:
         conn.executescript(SCHEMA)
-        seeded = conn.execute("SELECT COUNT(*) AS n FROM setting_selection").fetchone()["n"]
-        if seeded == 0:
-            conn.executemany(
-                "INSERT INTO setting_selection (category, value) VALUES (?, ?)",
-                [(cat, val) for cat, vals in DEFAULT_SELECTIONS.items() for val in vals],
-            )
-        conn.executemany(
-            "INSERT OR IGNORE INTO preference (key, value) VALUES (?, ?)",
-            DEFAULT_PREFERENCES.items(),
-        )
 
 
 @contextmanager

@@ -25,7 +25,7 @@
   function onBpmInput(value: string) {
     const parsed = Number.parseInt(value, 10);
     if (Number.isNaN(parsed) || parsed < MIN_BPM || parsed > MAX_BPM) return;
-    trainer.setComp({ comp_bpm: parsed });
+    trainer.set({ comp_bpm: parsed });
     comper.retempo(parsed);
   }
 </script>

@@ -32,6 +32,14 @@
   --color-accent-800: #7c1405;
   --color-accent-900: #4d170e;
 
+  /* Chord tones, by movable-do name. Red is the accent, so the root stands out
+     the most; blue and amber keep clear of it and of each other. */
+  --color-do: var(--color-accent);
+  --color-mi: #2759c4;
+  --color-so: #e8a317;
+  --color-on-tone: #ffffff;
+  --color-on-so: var(--color-text);
+
   --font-heading: 'Archivo', system-ui, sans-serif;
   --font-body: 'Archivo', system-ui, sans-serif;
 

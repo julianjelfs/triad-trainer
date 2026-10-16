@@ -1,4 +1,4 @@
-"""Which qualities, string sets, inversions and roots are in play."""
+"""The chord on screen, the tempo, and how comping is set up."""
 
 from __future__ import annotations
 

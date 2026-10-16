@@ -10,7 +10,7 @@
     onToggle: (pressed: boolean) => void;
     /** Equal widths, for rows of short labels like the twelve keys. */
     fixedWidth?: boolean;
-    /** Smaller, for toggles that sit alongside the drill rather than in settings. */
+    /** Smaller, for toggles that sit beside the fretboard or the mode switch. */
     small?: boolean;
   }
 

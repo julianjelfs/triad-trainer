@@ -2,26 +2,26 @@ export type Quality = 'major' | 'minor';
 export type Inversion = 'root' | 'first' | 'second';
 export type ChordTone = 'root' | 'third' | 'fifth';
 export type Tonality = 'major' | 'minor';
-export type Mode = 'drill' | 'comp';
+export type Mode = 'learn' | 'comp';
 export type CompInstrument = 'piano' | 'guitar';
 
-/** One chord on one string set. What the backend hands back as the next drill. */
-export interface DrillItem {
+/** One chord on one string set: everything needed to find its shapes. */
+export interface ChordItem {
   root_pc: number;
   quality: Quality;
   string_set: number;
 }
 
-/** One step of a drill. Mirrors the API's TriadItem. */
-export interface TriadItem extends DrillItem {
+/** One inversion of a chord on a string set. */
+export interface TriadItem extends ChordItem {
   inversion: Inversion;
 }
 
 export interface Settings {
-  qualities: Quality[];
-  sets: number[];
-  inversions: Inversion[];
-  roots: number[];
+  /** Root pitch class of the chord learning mode shows. */
+  learn_key: number;
+  learn_quality: Quality;
+  learn_string_set: number;
   bpm: number;
   show_labels: boolean;
   mode: Mode;
@@ -33,22 +33,6 @@ export interface Settings {
   comp_bpm: number;
 }
 
-export interface ItemStat extends TriadItem {
-  count: number;
-  last_practised_at: string | null;
-}
-
-export interface RootStat {
-  root_pc: number;
-  count: number;
-}
-
-export interface PracticeStats {
-  total: number;
-  by_root: RootStat[];
-  items: ItemStat[];
-}
-
 /** A TriadItem worked out into fret positions ready to draw. */
 export interface Shape {
   item: TriadItem;
@@ -58,10 +42,4 @@ export interface Shape {
   order: ChordTone[];
   /** Pitch class of each chord tone. */
   tones: Record<ChordTone, number>;
-}
-
-/** A drill's shapes, ordered from the lowest position on the neck to the highest. */
-export interface Drill {
-  item: DrillItem;
-  positions: Shape[];
 }

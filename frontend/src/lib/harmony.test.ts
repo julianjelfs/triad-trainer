@@ -5,13 +5,12 @@ import {
   PROGRESSIONS,
   accompanimentVoicing,
   chordsInKey,
+  chordSpelling,
   findProgression,
-  nearestShape,
   timeline
 } from './harmony';
-import { ALL_INVERSIONS, MAX_FRET, buildDrill } from './music';
 import type { KeyChord } from './harmony';
-import type { Quality, Shape } from './types';
+import type { Quality } from './types';
 
 const LETTER_PCS: Record<string, number> = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
 const LETTERS = 'CDEFGAB';
@@ -26,10 +25,6 @@ function pitchOf(name: string): number {
 function chord(root_pc: number, quality: Quality): KeyChord {
   const spelling = { root: '', third: '', fifth: '' };
   return { root_pc, quality, bars: 1, numeral: '', name: '', spelling };
-}
-
-function centre(shape: Shape): number {
-  return (Math.min(...shape.frets) + Math.max(...shape.frets)) / 2;
 }
 
 describe('chordsInKey', () => {
@@ -83,30 +78,20 @@ describe('chordsInKey', () => {
   });
 });
 
-describe('nearestShape', () => {
-  // Invariant 3
-  it('picks the drill position closest to the anchor, the lower one on a tie', () => {
+describe('chordSpelling', () => {
+  it('spells a chord the way the key of the same name does', () => {
+    expect(chordSpelling(1, 'major')).toEqual({ root: 'Db', third: 'F', fifth: 'Ab' });
+    expect(chordSpelling(1, 'minor')).toEqual({ root: 'C#', third: 'E', fifth: 'G#' });
+    expect(chordSpelling(3, 'minor')).toEqual({ root: 'Eb', third: 'Gb', fifth: 'Bb' });
+  });
+
+  it('names the right pitch for every tone of all 24 chords', () => {
     for (let root = 0; root < 12; root++) {
       for (const quality of ['major', 'minor'] as const) {
-        for (let stringSet = 0; stringSet < 4; stringSet++) {
-          const item = { root_pc: root, quality, string_set: stringSet };
-          const { positions } = buildDrill(item, ALL_INVERSIONS);
-
-          for (let anchor = 0; anchor <= MAX_FRET; anchor++) {
-            const picked = nearestShape(chord(root, quality), stringSet, anchor);
-            const label = `${root} ${quality} set ${stringSet} anchor ${anchor}`;
-
-            expect(positions.map((p) => p.frets), label).toContainEqual(picked.frets);
-            for (const other of positions) {
-              const pickedDistance = Math.abs(centre(picked) - anchor);
-              const otherDistance = Math.abs(centre(other) - anchor);
-              expect(otherDistance, label).toBeGreaterThanOrEqual(pickedDistance);
-              if (otherDistance === pickedDistance) {
-                expect(centre(picked), label).toBeLessThanOrEqual(centre(other));
-              }
-            }
-          }
-        }
+        const { root: r, third, fifth } = chordSpelling(root, quality);
+        expect(pitchOf(r)).toBe(root);
+        expect(pitchOf(third)).toBe((root + (quality === 'major' ? 4 : 3)) % 12);
+        expect(pitchOf(fifth)).toBe((root + 7) % 12);
       }
     }
   });

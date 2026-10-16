@@ -1,10 +1,9 @@
 /**
- * Keys, progressions and where their chords sit near a spot on the neck.
- * Pure functions, like `music.ts`: comping mode's audio and screen both read
- * from here, and neither the backend nor the drill needs any of it.
+ * Keys, progressions, and how their chords are spelled.
+ * Pure functions, like `music.ts`. Comping's audio and screen both read from
+ * here, and learning mode borrows the spelling.
  */
-import { ALL_INVERSIONS, buildDrill } from './music';
-import type { ChordTone, Quality, Shape, Tonality } from './types';
+import type { ChordTone, Quality, Tonality } from './types';
 
 export interface ProgressionChord {
   /** Scale degree, 0 = tonic. */
@@ -52,13 +51,6 @@ const TONIC_LETTERS: Record<Tonality, number[]> = {
 /** Beats in every bar of a progression. */
 export const BEATS_PER_BAR = 4;
 
-/**
- * Frets each loop of the progression is played around, climbing one zone per
- * loop and wrapping back to the bottom. Two frets apart, so neighbouring zones
- * overlap and a new zone is never a leap.
- */
-export const ZONE_ANCHORS = [1, 3, 5, 7, 9, 11];
-
 const I = (degree: number, bars = 1): ProgressionChord => ({ degree, quality: 'major', bars });
 const m = (degree: number, bars = 1): ProgressionChord => ({ degree, quality: 'minor', bars });
 
@@ -103,16 +95,29 @@ export function chordsInKey(progression: Progression, tonicPc: number): KeyChord
   return progression.chords.map(({ degree, quality, bars }) => {
     const root_pc = (tonicPc + scale[degree]) % 12;
     const letter = (tonicLetter + degree) % 7;
-    const tones = triadTones(root_pc, quality);
-    const spelling: Record<ChordTone, string> = {
-      root: spellOn(letter, tones.root),
-      third: spellOn((letter + 2) % 7, tones.third),
-      fifth: spellOn((letter + 4) % 7, tones.fifth)
-    };
+    const spelling = spellOnLetter(root_pc, quality, letter);
     const numeral = quality === 'major' ? NUMERALS[degree] : NUMERALS[degree].toLowerCase();
     const name = spelling.root + (quality === 'minor' ? 'm' : '');
     return { root_pc, quality, bars, numeral, name, spelling };
   });
+}
+
+/** Each chord tone spelled on its own letter, stacking thirds from the root's. */
+function spellOnLetter(rootPc: number, quality: Quality, letter: number): Record<ChordTone, string> {
+  const tones = triadTones(rootPc, quality);
+  return {
+    root: spellOn(letter, tones.root),
+    third: spellOn((letter + 2) % 7, tones.third),
+    fifth: spellOn((letter + 4) % 7, tones.fifth)
+  };
+}
+
+/**
+ * A chord on its own, with no key around it, spelled as the key of the same
+ * name would spell it: Db major, but C# minor.
+ */
+export function chordSpelling(rootPc: number, quality: Quality): Record<ChordTone, string> {
+  return spellOnLetter(rootPc, quality, TONIC_LETTERS[quality][rootPc]);
 }
 
 function triadTones(rootPc: number, quality: Quality): Record<ChordTone, number> {
@@ -121,32 +126,6 @@ function triadTones(rootPc: number, quality: Quality): Record<ChordTone, number>
     third: (rootPc + (quality === 'major' ? 4 : 3)) % 12,
     fifth: (rootPc + 7) % 12
   };
-}
-
-function centre(shape: Shape): number {
-  return (Math.min(...shape.frets) + Math.max(...shape.frets)) / 2;
-}
-
-/**
- * The triad of this chord on this string set that sits closest to a fret, by
- * the middle of the shape. On a tie the lower one wins, so the choice never
- * flickers between two equally good grips.
- */
-export function nearestShape(chord: KeyChord, stringSet: number, anchor: number): Shape {
-  const { positions } = buildDrill(
-    { root_pc: chord.root_pc, quality: chord.quality, string_set: stringSet },
-    ALL_INVERSIONS
-  );
-
-  let best = positions[0];
-  for (const shape of positions) {
-    const distance = Math.abs(centre(shape) - anchor);
-    const bestDistance = Math.abs(centre(best) - anchor);
-    if (distance < bestDistance || (distance === bestDistance && centre(shape) < centre(best))) {
-      best = shape;
-    }
-  }
-  return best;
 }
 
 /** Lowest note of the backing's bass register, C2. */

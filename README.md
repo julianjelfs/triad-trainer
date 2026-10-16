@@ -1,69 +1,38 @@
 # Triad Trainer
 
-![C major walked up the neck on strings 4-3-2: first inversion at the nut, second inversion at the fifth fret, root position at the tenth, then first inversion again an octave up](docs/positions.gif)
+![C major on strings 4-3-2: four shapes up the neck, roots in red, thirds in blue, fifths in amber](docs/learn.png)
 
-Guitar triad drill. It hands you a chord on a string set, picked from whatever
-you have practised least, and the metronome walks you through every inversion
-of it from the lowest position on the neck to the highest, a bar to each shape,
-wrapping back to the bottom until you stop.
+Guitar triad reference. Pick a key, a quality and a string set, and it shows
+every shape of that triad on the neck at once, from the nut to the fifteenth
+fret.
 
-You do not choose the chord itself. You tick which qualities, string sets and
-keys are in play, and it picks from those, leaning towards whatever you have
-been neglecting. Narrow it to one key when you want to work on one; the
-practice log will show what that is costing the others.
+## Learning
 
-All three inversions are always in play. Moving between them is the exercise,
-so leaving one out makes it a different drill rather than a smaller one.
+Each dot is coloured by its job in the chord. Red is do (the root), blue is
+mi (the third) and amber is so (the fifth). Minor chords use the same three
+names, so a minor triad looks like its major one with the blue dot a fret
+lower. The dot itself shows the note name, and the "Note names" toggle hides
+it when you want to test yourself.
 
-## Using it
+A grey band ties each shape's three notes together. Inversions repeat an
+octave up, so most string sets show four or five shapes.
 
-Three beats to a bar, one per note of the triad, and the shape changes on beat
-one. Say the note before you play it.
-
-Every position in the drill sits on the neck as a faint disc, with the shape
-you are on drawn solid on top, so you can see the whole run and where you are
-going next.
-
-The squares under the diagram step through the positions by hand, for getting
-your bearings before you start counting. Browsing is not practice, so nothing
-you do there is logged.
-
-**Done** logs the shape on screen and moves on to another chord. **New drill**
-moves on without logging it. Both stop the metronome.
-
-The practice log at the bottom shows what you have played and, more usefully,
-what you have been avoiding.
+There is a metronome underneath, three clicks to a bar. It does not change
+the picture. Play through the shapes at whatever pace suits.
 
 ## Comping
-
-The drill teaches you where each chord's triads are. Comping mode is for using
-them over changes, where the next chord shows up whether you've found it or not.
 
 Switch to **Comping** at the top, then pick a progression, a key, a string set
 and a sound. Press Start and you get one bar of clicks, then the progression on
 piano or guitar, round and round. Bass on one and three, chord on two and four,
 all of it below middle C so it sits under what you play.
 
-Play a triad for each chord. The fretboard shows the nearest triad of the
-current chord to a zone of the neck, and a faint one for the next chord. The
-zone starts around the first fret and moves up two frets every time round the
-progression, then wraps back down. One lap takes you through the whole neck,
-and moving to the next chord is never more than a short shift.
+The fretboard shows every shape of the chord that is sounding, coloured the
+same way as in learning mode. Pick whichever shape is nearest your hand. The
+row of chord names above it shows what is coming.
 
 The sounds are real samples, fetched the first time you press Start, so that
-first time needs an internet connection. Nothing in comping mode goes into the
-practice log.
-
-## Saying "next"
-
-While you are finding the shapes, the "Listen for next" toggle advances a
-position when you say the word, so you can keep both hands on the guitar.
-
-Worth knowing before you switch it on: the audio is not processed on your
-machine. This is the browser's speech recognition, and Chrome implements it by
-streaming microphone audio to Google's servers. It runs only while the toggle
-is on, and it is off by default, but that is the trade. Chrome and Edge only.
-Starting the metronome switches it off, since the clicks are all it would hear.
+first time needs an internet connection.
 
 ## Running it
 
@@ -86,8 +55,7 @@ Open <http://localhost:5173>. Ctrl-C stops both halves.
 
 It lives on the house Raspberry Pi, not on a laptop, at
 `https://triads.julianjelfs.co.uk`. Anyone on the home wifi can open it with
-nothing installed, and the microphone works because that address has a real
-certificate. One systemd unit runs uvicorn on loopback; Caddy in front of it
+nothing installed. One systemd unit runs uvicorn on loopback; Caddy in front of it
 holds the certificate and is the only thing listening on the network.
 
 Drive it from the laptop with `triad-trainer`, which works over SSH:
@@ -113,6 +81,7 @@ To set a Pi up from scratch, or to put the units back after changing them, run
 database. Caddy is configured from the recipe-for-disaster repo, because one
 Caddyfile serves both apps.
 
-Your practice history lives in `backend/triads.db` **on the Pi**. It is backed
-up there nightly, keeping 14, and pulled to `~/Backups/triad-trainer` on the
-laptop, keeping 30. Deleting the file resets the log and nothing else.
+Your settings live in `backend/triads.db` **on the Pi**. It is backed up there
+nightly, keeping 14, and pulled to `~/Backups/triad-trainer` on the laptop,
+keeping 30. The practice log from the old drill is still in that file,
+untouched; nothing reads it any more.

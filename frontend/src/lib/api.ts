@@ -1,5 +1,5 @@
 /** Thin typed wrapper over the FastAPI backend. Vite proxies /api in dev. */
-import type { DrillItem, PracticeStats, Settings, TriadItem } from './types';
+import type { Settings } from './types';
 
 export class ApiError extends Error {
   constructor(
@@ -29,16 +29,5 @@ export const api = {
   getSettings: () => request<Settings>('/settings'),
 
   saveSettings: (settings: Settings) =>
-    request<Settings>('/settings', { method: 'PUT', body: JSON.stringify(settings) }),
-
-  /** Rejects with ApiError(409) when the settings rule out every drill. */
-  nextDrill: () => request<DrillItem>('/practice/next'),
-
-  /** Log a run of shapes in one call, normally a completed lap of a drill. */
-  logShapes: (items: TriadItem[]) =>
-    request<unknown>('/practice/events', { method: 'POST', body: JSON.stringify(items) }),
-
-  getStats: () => request<PracticeStats>('/practice/stats'),
-
-  clearLog: () => request<void>('/practice/events', { method: 'DELETE' })
+    request<Settings>('/settings', { method: 'PUT', body: JSON.stringify(settings) })
 };

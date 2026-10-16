@@ -1,42 +1,55 @@
 from __future__ import annotations
 
-import random
+import sqlite3
 from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.schemas import ItemStat, Settings
-from app.selection import choose_next
 
 
 @pytest.fixture
-def client(tmp_path, monkeypatch):
-    monkeypatch.setenv("TRIADS_DB_PATH", str(tmp_path / "test.db"))
+def db_path(tmp_path, monkeypatch):
+    path = tmp_path / "test.db"
+    monkeypatch.setenv("TRIADS_DB_PATH", str(path))
+    return path
+
+
+@pytest.fixture
+def client(db_path):
     with TestClient(app) as test_client:
         yield test_client
 
 
-def test_defaults_are_seeded(client):
-    settings = client.get("/api/settings").json()
-    assert settings["qualities"] == ["major"]
-    assert settings["roots"] == list(range(12))
-    assert settings["bpm"] == 60
+def test_defaults_on_an_empty_database(client):
+    assert client.get("/api/settings").json() == {
+        "learn_key": 0,
+        "learn_quality": "major",
+        "learn_string_set": 2,
+        "bpm": 60,
+        "show_labels": True,
+        "mode": "learn",
+        "comp_key": 7,
+        "comp_progression": "I-V-vi-IV",
+        "comp_string_set": 2,
+        "comp_instrument": "piano",
+        "comp_bpm": 80,
+    }
 
 
-def test_settings_round_trip(client):
+def test_settings_survive_a_reload(client):
+    """Every learning and comping choice comes back as it was saved."""
     payload = {
-        "qualities": ["minor"],
-        "sets": [1],
-        "inversions": ["first"],
-        "roots": [0, 7],
+        "learn_key": 9,
+        "learn_quality": "minor",
+        "learn_string_set": 0,
         "bpm": 84,
         "show_labels": False,
         "mode": "comp",
         "comp_key": 3,
         "comp_progression": "blues",
-        "comp_string_set": 0,
+        "comp_string_set": 1,
         "comp_instrument": "guitar",
         "comp_bpm": 132,
     }
@@ -44,159 +57,51 @@ def test_settings_round_trip(client):
     assert client.get("/api/settings").json() == payload
 
 
-def test_comping_defaults_are_seeded(client):
-    settings = client.get("/api/settings").json()
-    assert {key: value for key, value in settings.items() if key.startswith("comp_")} == {
-        "comp_key": 7,
-        "comp_progression": "I-V-vi-IV",
-        "comp_string_set": 2,
-        "comp_instrument": "piano",
-        "comp_bpm": 80,
-    }
-    assert settings["mode"] == "drill"
+def test_a_database_left_in_drill_mode_opens_in_learning_mode(db_path):
+    """The Pi's database last saved mode=drill and still has the drill's tables."""
+    conn = sqlite3.connect(db_path)
+    conn.executescript(
+        """
+        CREATE TABLE preference (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+        CREATE TABLE practice_event (id INTEGER PRIMARY KEY, root_pc INTEGER);
+        INSERT INTO preference VALUES ('mode', 'drill'), ('comp_key', '5');
+        INSERT INTO practice_event (root_pc) VALUES (3);
+        """
+    )
+    conn.commit()
+    conn.close()
+
+    with TestClient(app) as client:
+        settings = client.get("/api/settings").json()
+
+    assert settings["mode"] == "learn"
+    assert settings["comp_key"] == 5
+    conn = sqlite3.connect(db_path)
+    assert conn.execute("SELECT COUNT(*) FROM practice_event").fetchone()[0] == 1
+    conn.close()
 
 
 @pytest.mark.parametrize(
     "field, value",
     [
-        ("comp_key", 12),
+        ("learn_key", 12),
+        ("learn_quality", "diminished"),
+        ("learn_string_set", 4),
         ("comp_bpm", 200),
-        ("comp_string_set", 4),
         ("comp_instrument", "banjo"),
-        ("mode", "jam"),
+        ("mode", "drill"),
         ("comp_progression", ""),
     ],
 )
-def test_rejects_out_of_range_comping_settings(client, field, value):
-    """Invariant 9: bad comping values are refused, not stored."""
+def test_rejects_out_of_range_settings(client, field, value):
     settings = client.get("/api/settings").json()
     settings[field] = value
     assert client.put("/api/settings", json=settings).status_code == 422
 
 
-def test_next_drill_respects_settings(client):
-    client.put(
-        "/api/settings",
-        json={
-            "qualities": ["minor"],
-            "sets": [2],
-            "inversions": ["second"],
-            "roots": [3],
-            "bpm": 60,
-            "show_labels": True,
-        },
-    )
-    # A drill names the chord and string set; the inversions are its steps.
-    assert client.get("/api/practice/next").json() == {
-        "root_pc": 3,
-        "quality": "minor",
-        "string_set": 2,
-    }
-
-
-def test_next_drill_409_when_nothing_selected(client):
-    client.put(
-        "/api/settings",
-        json={
-            "qualities": [],
-            "sets": [],
-            "inversions": [],
-            "roots": [],
-            "bpm": 60,
-            "show_labels": True,
-        },
-    )
-    assert client.get("/api/practice/next").status_code == 409
-
-
-def test_logging_a_lap_accumulates_stats(client):
-    lap = [
-        {"root_pc": 0, "quality": "major", "string_set": 0, "inversion": inversion}
-        for inversion in ("first", "second", "root", "first")
-    ]
-    response = client.post("/api/practice/events", json=lap)
-    assert response.status_code == 201
-    assert len(response.json()) == 4
-
-    stats = client.get("/api/practice/stats").json()
-    assert stats["total"] == 4
-    # The lap passed "first" twice, an octave apart, so it counts twice.
-    counts = {item["inversion"]: item["count"] for item in stats["items"]}
-    assert counts == {"root": 1, "second": 1, "first": 2}
-    assert next(r for r in stats["by_root"] if r["root_pc"] == 0)["count"] == 4
-
-    assert client.delete("/api/practice/events").status_code == 204
-    assert client.get("/api/practice/stats").json()["total"] == 0
-
-
-def test_rejects_out_of_range_root(client):
-    response = client.put(
-        "/api/settings",
-        json={
-            "qualities": ["major"],
-            "sets": [0],
-            "inversions": ["root"],
-            "roots": [12],
-            "bpm": 60,
-            "show_labels": True,
-        },
-    )
-    assert response.status_code == 422
-
-
-def _stat(inversion: str, count: int) -> ItemStat:
-    return ItemStat(
-        root_pc=0,
-        quality="major",
-        string_set=0,
-        inversion=inversion,
-        count=count,
-        last_practised_at="2026-01-01T00:00:00+00:00",
-    )
-
-
-def test_choose_next_prefers_least_practised():
-    settings = Settings(
-        qualities=["major"],
-        sets=[0],
-        inversions=["root", "first", "second"],
-        roots=[0, 1],
-        bpm=60,
-        show_labels=True,
-    )
-    # Root 0 has three laps behind it, which is well outside the one-lap window.
-    stats = {
-        (0, "major", 0, inversion): _stat(inversion, 9)
-        for inversion in ("root", "first", "second")
-    }
-    assert choose_next(settings, stats, rng=random.Random(1)).root_pc == 1
-
-
-def test_choose_next_scores_a_drill_across_its_inversions():
-    settings = Settings(
-        qualities=["major"],
-        sets=[0],
-        inversions=["root", "first", "second"],
-        roots=[0, 1],
-        bpm=60,
-        show_labels=True,
-    )
-    # One heavily drilled inversion still rules the whole chord out.
-    stats = {(0, "major", 0, "root"): _stat("root", 20)}
-    assert choose_next(settings, stats, rng=random.Random(0)).root_pc == 1
-
-
-def test_choose_next_none_when_no_inversions_enabled():
-    settings = Settings(
-        qualities=["major"], sets=[0], inversions=[], roots=[0], bpm=60, show_labels=True
-    )
-    assert choose_next(settings, {}) is None
-
-
 def test_concurrent_requests_share_no_connection(client):
     """FastAPI hands sync endpoints to a threadpool; connections must survive it."""
     with ThreadPoolExecutor(max_workers=8) as pool:
-        paths = ["/api/settings", "/api/practice/stats", "/api/practice/next"] * 4
-        responses = list(pool.map(lambda path: client.get(path), paths))
+        responses = list(pool.map(lambda _: client.get("/api/settings"), range(12)))
 
-    assert [r.status_code for r in responses] == [200] * len(paths)
+    assert [r.status_code for r in responses] == [200] * 12
