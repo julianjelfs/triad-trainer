@@ -260,7 +260,7 @@
       {
         "name": "beat-lift",
         "value": "0 10px 18px -8px color-mix(in srgb, var(--ink) 45%, transparent)",
-        "purpose": "The tone tile on the current metronome beat, with translateY(-6px)."
+        "purpose": "The tone tile on the current metronome beat, with translateY(-4px)."
       }
     ],
     "motion": [
@@ -369,9 +369,9 @@
       "name": "Tone tiles",
       "kind": "custom",
       "refersTo": "tone-tile-do",
-      "description": "Do, mi and so as flash-card tiles; the beat's tile lifts.",
+      "description": "Do, mi and so as a compact one-line legend; the beat's tile lifts.",
       "html": "<ul class=\"ds-tiles\"><li class=\"ds-tile do\"><span class=\"ds-syl\">do</span><span class=\"ds-note\"><b>A</b><span>root</span></span></li><li class=\"ds-tile mi active\"><span class=\"ds-syl\">mi</span><span class=\"ds-note\"><b>C#</b><span>third</span></span></li><li class=\"ds-tile so\"><span class=\"ds-syl\">so</span><span class=\"ds-note\"><b>E</b><span>fifth</span></span></li></ul>",
-      "css": ".ds-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0;padding:0;list-style:none} .ds-tile{font-family: var(--font);display:flex;flex-direction:column;justify-content:space-between;gap:14px;min-height:100px;padding:16px 18px 14px;border-radius:var(--radius-tile);transition:transform 220ms var(--ease-out),box-shadow 220ms var(--ease-out)} .ds-tile.do{background:var(--do);color:var(--on-do)} .ds-tile.mi{background:var(--mi);color:var(--on-mi)} .ds-tile.so{background:var(--so);color:var(--on-so)} .ds-tile.active{transform:translateY(-6px);box-shadow:0 10px 18px -8px color-mix(in srgb,var(--ink) 45%,transparent)} .ds-syl{font-weight:800;font-size:44px;line-height:.9;letter-spacing:-0.02em;font-variation-settings:'opsz' 96} .ds-note{display:flex;align-items:baseline;gap:8px} .ds-note b{font-weight:800;font-size:20px} .ds-note span{font-size:13px;font-weight:600}"
+      "css": ".ds-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0;padding:0;list-style:none} .ds-tile{font-family: var(--font);display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:12px 16px;border-radius:var(--radius-tile);transition:transform 220ms var(--ease-out),box-shadow 220ms var(--ease-out)} .ds-tile.do{background:var(--do);color:var(--on-do)} .ds-tile.mi{background:var(--mi);color:var(--on-mi)} .ds-tile.so{background:var(--so);color:var(--on-so)} .ds-tile.active{transform:translateY(-4px);box-shadow:0 10px 18px -8px color-mix(in srgb,var(--ink) 45%,transparent)} .ds-syl{font-weight:800;font-size:28px;line-height:1;letter-spacing:-0.02em;font-variation-settings:'opsz' 96} .ds-note{display:flex;align-items:baseline;gap:8px} .ds-note b{font-weight:800;font-size:17px} .ds-note span{font-size:13px;font-weight:600}"
     },
     {
       "name": "Neck card",
@@ -400,7 +400,7 @@
   ],
   "narrative": {
     "northStar": "The Classroom Solfège Chart",
-    "overview": "**Creative North Star: \"The Classroom Solfège Chart\"**\n\nThe app looks like the chart on a music-room wall. A warm paper ground, brown-black ink, and three saturated colours, each tied to one chord tone: vermilion for do, marigold for mi, cobalt for so. Every other surface is a paper, cream or sand tint of the same warm hue. When the player looks up from the guitar a metre away, the chord tones are the first thing they see because nothing else is allowed to be bright.\n\nDensity is low on purpose. The chord name is huge, the tone tiles are the size of flash cards, and the controls are fat pills you can hit between phrases. One typeface, Bricolage Grotesque, does all the work, with weight and optical size carrying the hierarchy. The neck sits on a cream card, the only raised surface in the app. Play, tempo and note names live in a bar stuck to the bottom of the window.\n\nMotion is small and musical. The metronome's three beats lift the do, mi and so tiles in turn, and a chord change sweeps the dots onto the neck from the nut upward over 220ms.",
+    "overview": "**Creative North Star: \"The Classroom Solfège Chart\"**\n\nThe app looks like the chart on a music-room wall. A warm paper ground, brown-black ink, and three saturated colours, each tied to one chord tone: vermilion for do, marigold for mi, cobalt for so. Every other surface is a paper, cream or sand tint of the same warm hue. When the player looks up from the guitar a metre away, the chord tones are the first thing they see because nothing else is allowed to be bright.\n\nDensity is low on purpose. The chord name is huge, the tone tiles are a one-line legend beside it, and the controls are fat pills you can hit between phrases. One typeface, Bricolage Grotesque, does all the work, with weight and optical size carrying the hierarchy. The neck sits on a cream card, the only raised surface in the app. Play, tempo and note names live in a bar stuck to the bottom of the window.\n\nMotion is small and musical. The metronome's three beats lift the do, mi and so tiles in turn, and a chord change sweeps the dots onto the neck from the nut upward over 220ms.",
     "keyCharacteristics": [
       "Three meaning colours, everything else warm neutral",
       "One variable typeface, weight 800 for anything you read from across the room",

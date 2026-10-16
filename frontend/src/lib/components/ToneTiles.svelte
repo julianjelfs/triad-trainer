@@ -41,13 +41,13 @@
     list-style: none;
   }
 
+  /* A legend, not a poster: syllable and note on one line. */
   .tile {
     display: flex;
-    flex-direction: column;
+    align-items: baseline;
     justify-content: space-between;
-    gap: 14px;
-    min-height: 100px;
-    padding: 16px 18px 14px;
+    gap: 10px;
+    padding: 12px 16px;
     border-radius: var(--radius-tile);
     transition:
       transform 220ms var(--ease-out),
@@ -71,14 +71,14 @@
 
   /* The beat's tile rises off the chart, the way a teacher taps one. */
   .tile.active {
-    transform: translateY(-6px);
+    transform: translateY(-4px);
     box-shadow: 0 10px 18px -8px color-mix(in srgb, var(--ink) 45%, transparent);
   }
 
   .syllable {
     font-weight: 800;
-    font-size: 44px;
-    line-height: 0.9;
+    font-size: 28px;
+    line-height: 1;
     letter-spacing: -0.02em;
     font-variation-settings: 'opsz' 96;
   }
@@ -91,7 +91,7 @@
 
   .name {
     font-weight: 800;
-    font-size: 20px;
+    font-size: 17px;
     animation: note-in 360ms var(--ease-out) backwards;
   }
 
@@ -113,21 +113,20 @@
     }
 
     .tile {
-      min-height: 92px;
-      padding: 12px 12px 10px;
-      gap: 10px;
+      padding: 10px 12px;
     }
 
     .syllable {
-      font-size: 32px;
+      font-size: 22px;
     }
 
     .name {
-      font-size: 17px;
+      font-size: 15px;
     }
 
+    /* "root/third/fifth" will not fit beside the note in a third of a phone. */
     .role {
-      font-size: 13px;
+      display: none;
     }
   }
 </style>

@@ -63,7 +63,7 @@
 <style>
   .hero {
     display: grid;
-    grid-template-columns: minmax(200px, 1fr) minmax(0, 1.7fr);
+    grid-template-columns: minmax(200px, 1fr) minmax(0, 1.3fr);
     align-items: end;
     gap: 24px;
   }

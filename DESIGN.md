@@ -28,9 +28,9 @@ typography:
     fontVariation: "'opsz' 96"
   headline:
     fontFamily: "'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif"
-    fontSize: "44px"
+    fontSize: "28px"
     fontWeight: 800
-    lineHeight: 0.9
+    lineHeight: 1
     letterSpacing: "-0.02em"
     fontVariation: "'opsz' 96"
   title:
@@ -128,19 +128,16 @@ components:
     textColor: "{colors.on-do}"
     rounded: "{rounded.tile}"
     padding: "16px 18px 14px"
-    height: "100px"
   tone-tile-mi:
     backgroundColor: "{colors.mi}"
     textColor: "{colors.ink}"
     rounded: "{rounded.tile}"
     padding: "16px 18px 14px"
-    height: "100px"
   tone-tile-so:
     backgroundColor: "{colors.so}"
     textColor: "{colors.on-so}"
     rounded: "{rounded.tile}"
     padding: "16px 18px 14px"
-    height: "100px"
   progression-chip:
     backgroundColor: "{colors.sand}"
     textColor: "{colors.ink}"
@@ -163,7 +160,7 @@ components:
 
 The app looks like the chart on a music-room wall. A warm paper ground, brown-black ink, and three saturated colours, each tied to one chord tone: vermilion for do, marigold for mi, cobalt for so. Every other surface is a paper, cream or sand tint of the same warm hue. When the player looks up from the guitar a metre away, the chord tones are the first thing they see because nothing else is allowed to be bright.
 
-Density is low on purpose. The chord name is huge, the tone tiles are the size of flash cards, and the controls are fat pills you can hit between phrases. One typeface, Bricolage Grotesque, does all the work, with weight and optical size carrying the hierarchy. The neck sits on a cream card, the only raised surface in the app. Play, tempo and note names live in a bar stuck to the bottom of the window.
+Density is low on purpose. The chord name is huge, the tone tiles are a one-line legend beside it, and the controls are fat pills you can hit between phrases. One typeface, Bricolage Grotesque, does all the work, with weight and optical size carrying the hierarchy. The neck sits on a cream card, the only raised surface in the app. Play, tempo and note names live in a bar stuck to the bottom of the window.
 
 Motion is small and musical. The metronome's three beats lift the do, mi and so tiles in turn, and a chord change sweeps the dots onto the neck from the nut upward over 220ms.
 
@@ -215,8 +212,8 @@ The one exception in the build is the error and notice box, which mixes do at 12
 
 ### Hierarchy
 - **Display** (800, clamp(56px, 7vw, 80px), line-height 0.85, -0.035em): the chord name in learn mode. The quality underneath is 0.42em at weight 600 in soft ink.
-- **Headline** (800, 44px, 0.9): the do, mi, so syllables on the tone tiles. 32px on phones.
-- **Title** (800, 18px): the wordmark. Note names on the tiles are 800 at 20px (17px on phones). Section header titles are 700 at 15px.
+- **Headline** (800, 28px, 1): the do, mi, so syllables on the tone tiles, with the note name on the same line. 22px on phones, where the root/third/fifth label is hidden.
+- **Title** (800, 18px): the wordmark. Note names on the tiles are 800 at 17px (15px on phones). Section header titles are 700 at 15px.
 - **Body** (400, 15px, 1.5): base text, status lines, the string-set line.
 - **Label** (600, 14px, line-height 1): pill, segmented and chip text.
 - **Caption** (600, 13px): group labels ("Key", "Quality", "Strings"), tone role words, numerals in chips, the small pill. Fret numbers and string names on the neck are 600 in soft ink.
@@ -228,7 +225,7 @@ The one exception in the build is the error and notice box, which mixes do at 12
 
 ## Layout
 
-A single centred column, max 1040px, with 32px side gutters on desktop and 16px at 600px and below. The learn page runs top to bottom: header with wordmark left and the Learn/Comping control right; a hero row with the chord name and the three tone tiles (grid 1fr to 1.7fr, aligned to the bottom edge); the pickers; the full-width neck card; then the sticky transport. The pickers sit above the neck so a change and its result are on screen together at 1440×757.
+A single centred column, max 1040px, with 32px side gutters on desktop and 16px at 600px and below. The learn page runs top to bottom: header with wordmark left and the Learn/Comping control right; a hero row with the chord name and the three tone tiles (grid 1fr to 1.3fr, aligned to the bottom edge); the pickers; the full-width neck card; then the sticky transport. The pickers sit above the neck so a change and its result are on screen together at 1440×757.
 
 Picker rows are a two-column grid with a 96px label column, so every row of pills starts on the same line. Pills in a row are 6px apart and wrap. On phones the label moves above the pills.
 
@@ -270,7 +267,7 @@ A sand track with 4px padding holding two to three 34px pills. The chosen one is
 A sand pill holding round minus and plus buttons (34px) either side of a bare number input at 700/17px with tabular figures and a soft-ink "bpm" unit. Steps of 5 between 30 and 160. A disabled button fades to 35%.
 
 ### Tone tiles
-Three tiles in a grid with 12px gaps, at least 100px tall, filled do, mi and so. Each carries the syllable large at top left and the spelled note plus its role ("root", "third", "fifth") at the bottom. A new note name rises 6px into place over 360ms. The tile on the current metronome beat lifts 6px with the beat shadow.
+Three compact tiles in a grid with 12px gaps, filled do, mi and so, padded 12px by 16px. Each is one line: the syllable at 28px on the left, the spelled note and its role ("root", "third", "fifth") on the right. On phones the role is hidden and the syllable drops to 22px. A new note name rises 6px into place over 360ms. The tile on the current metronome beat lifts 4px with the beat shadow.
 
 ### Neck card and fretboard
 A cream card holding an SVG fretboard to fret 15. Shapes are drawn as wide round-capped band strokes with chord-tone dots on top: do and so ringed in cream, mi ringed in marigold rim. Note names inside dots are weight 800 in each tone's on-colour. On a chord change, dots scale in from 0.55 with delays proportional to fret, a 220ms sweep up the neck, and the bands fade in over 420ms.
