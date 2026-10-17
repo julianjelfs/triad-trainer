@@ -106,8 +106,8 @@
     margin: 28px 0 0;
     padding: 12px 16px;
     border-radius: 12px;
-    background: color-mix(in srgb, var(--do) 12%, var(--paper));
-    color: color-mix(in srgb, var(--do) 70%, var(--ink));
+    background: var(--sand);
+    color: var(--ink-soft);
     font-size: 14px;
   }
 

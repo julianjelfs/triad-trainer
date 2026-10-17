@@ -36,7 +36,8 @@ whichever shape is nearest your hand. The row of chord names above the neck
 shows what is coming.
 
 The sounds are real samples, fetched the first time you press Start, so that
-first time needs an internet connection.
+first time needs an internet connection. After that they are kept on the
+device.
 
 ## Running it
 
@@ -76,9 +77,17 @@ triad-trainer backup     # snapshot now and pull it here
 builds the frontend **here**, and copies the result across. The Pi never runs
 Vite, which is what keeps a 2GB board comfortable.
 
-Away from the house it is on the tailnet at
-`https://pi.tail50bfbf.ts.net:8443`, and `triad-trainer url` picks whichever
-applies.
+Away from the house the same address works for any device on the tailnet. The
+name points at the Pi's home address, 192.168.68.69, and the Pi advertises that
+one address as a Tailscale subnet route, so a tailnet device with subnet routes
+on (the default on macOS, iOS, Android and Windows) reaches it through the
+tunnel. The older tailnet address, `https://pi.tail50bfbf.ts.net:8443`, still
+works too.
+
+Off the wifi and off the tailnet, the app still opens. A service worker keeps
+the whole app on the device, settings are kept in the browser and sent to the
+Pi the next time it answers, and comping keeps any samples it has already
+played. Comping needs a connection the first time each sound is used.
 
 To set a Pi up from scratch, or to put the units back after changing them, run
 `./deploy/install-pi.sh` on the Pi. It is safe to re-run and never touches the

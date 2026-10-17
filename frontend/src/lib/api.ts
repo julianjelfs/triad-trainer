@@ -11,9 +11,16 @@ export class ApiError extends Error {
   }
 }
 
+/**
+ * Away from the house and off the tailnet, the Pi's address can hang rather
+ * than fail. Give up after this long and let the app carry on without it.
+ */
+const TIMEOUT_MS = 4000;
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`/api${path}`, {
     headers: init?.body ? { 'Content-Type': 'application/json' } : undefined,
+    signal: AbortSignal.timeout(TIMEOUT_MS),
     ...init
   });
 
@@ -24,6 +31,8 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   return response.status === 204 ? (undefined as T) : ((await response.json()) as T);
 }
+
+export type Api = typeof api;
 
 export const api = {
   getSettings: () => request<Settings>('/settings'),
