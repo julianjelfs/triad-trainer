@@ -3,14 +3,16 @@
   import type { Comper } from '../state/comper.svelte';
   import type { Trainer } from '../state/trainer.svelte';
   import Fretboard from './Fretboard.svelte';
-    import ToneTiles from './ToneTiles.svelte';
+  import ToneTiles from './ToneTiles.svelte';
 
   let { trainer, comper }: { trainer: Trainer; comper: Comper } = $props();
 
   let chords = $derived(trainer.compChords);
   let stringSet = $derived(trainer.settings?.comp_string_set ?? 2);
 
-  let current = $derived(chords[comper.chordIndex] ?? chords[0]);
+  /** Falls back to the first chord when a shorter progression leaves the index past the end. */
+  let shown = $derived(comper.chordIndex < chords.length ? comper.chordIndex : 0);
+  let current = $derived(chords[shown]);
   let playing = $derived(comper.running && !comper.countingIn);
 
   /** The same view as learning mode: every shape of the chord that is sounding. */
@@ -33,9 +35,25 @@
 
   <ol class="progression" aria-label="Progression">
     {#each chords as chord, index (index)}
-      <li class:on={playing && index === comper.chordIndex}>
+      {#snippet label()}
         <span class="symbol">{chord.name}</span>
         <span class="numeral-small">{chord.numeral}</span>
+      {/snippet}
+      <li>
+        {#if comper.running}
+          <span class="chip" class:on={playing && index === shown}>{@render label()}</span>
+        {:else}
+          <!-- Stopped, any chord can be picked to look over its shapes before starting. -->
+          <button
+            type="button"
+            class="chip"
+            class:on={index === shown}
+            aria-pressed={index === shown}
+            onclick={() => (comper.chordIndex = index)}
+          >
+            {@render label()}
+          </button>
+        {/if}
       </li>
     {/each}
   </ol>
@@ -76,20 +94,35 @@
     list-style: none;
   }
 
-  .progression li {
+  .chip {
     display: inline-flex;
     align-items: baseline;
     gap: 6px;
     min-height: 40px;
     padding: 10px 16px;
+    border: 0;
     border-radius: 999px;
     background: var(--sand);
     transition:
       background-color 160ms var(--ease-out),
-      color 160ms var(--ease-out);
+      color 160ms var(--ease-out),
+      transform 160ms var(--ease-out);
   }
 
-  .progression li.on {
+  button.chip {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  button.chip:hover:not(.on) {
+    background: var(--sand-strong);
+  }
+
+  button.chip:active {
+    transform: scale(0.96);
+  }
+
+  .chip.on {
     background: var(--ink);
     color: var(--paper);
   }
@@ -104,7 +137,7 @@
     color: var(--ink-soft);
   }
 
-  .progression li.on .numeral-small {
+  .chip.on .numeral-small {
     color: var(--sand-strong);
   }
 
