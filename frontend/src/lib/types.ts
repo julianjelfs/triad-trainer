@@ -31,6 +31,10 @@ export interface Settings {
   comp_string_set: number;
   comp_instrument: CompInstrument;
   comp_bpm: number;
+  /** Move to a random key every KEY_CHANGE_BARS while comping. */
+  comp_random_key: boolean;
+  /** Draw only the root of each shape, leaving the 3rd and 5th to memory. */
+  comp_root_only: boolean;
 }
 
 /** A TriadItem worked out into fret positions ready to draw. */

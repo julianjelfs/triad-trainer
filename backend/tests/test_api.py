@@ -36,6 +36,8 @@ def test_defaults_on_an_empty_database(client):
         "comp_string_set": 2,
         "comp_instrument": "piano",
         "comp_bpm": 80,
+        "comp_random_key": False,
+        "comp_root_only": False,
     }
 
 
@@ -53,6 +55,8 @@ def test_settings_survive_a_reload(client):
         "comp_string_set": 1,
         "comp_instrument": "guitar",
         "comp_bpm": 132,
+        "comp_random_key": True,
+        "comp_root_only": True,
     }
     assert client.put("/api/settings", json=payload).json() == payload
     assert client.get("/api/settings").json() == payload

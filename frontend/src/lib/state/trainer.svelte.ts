@@ -27,7 +27,9 @@ export const DEFAULT_SETTINGS: Settings = {
   comp_progression: 'I-V-vi-IV',
   comp_string_set: 2,
   comp_instrument: 'piano',
-  comp_bpm: 80
+  comp_bpm: 80,
+  comp_random_key: false,
+  comp_root_only: false
 };
 
 const OFFLINE_NOTICE = "Can't reach the Pi, so changes are kept on this device for now.";

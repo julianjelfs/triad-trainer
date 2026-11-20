@@ -1,7 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { NoteStart } from '../audio';
 import { chordsInKey, findProgression, type Progression } from '../harmony';
-import { COUNT_IN_BEATS, Comper, START_DELAY_S, type ComperAudio } from './comper.svelte';
+import {
+  COUNT_IN_BEATS,
+  Comper,
+  KEY_CHANGE_BARS,
+  START_DELAY_S,
+  type ComperAudio
+} from './comper.svelte';
 
 /**
  * Audio with no speakers. The clock is the faked system time, so advancing
@@ -171,6 +177,56 @@ describe('Comper', () => {
     expect(comper.loading).toBe(false);
     expect(starts).toHaveLength(0);
     expect(clicks).toHaveLength(0);
+  });
+
+  it('moves key on the first bar after 16, sound and screen together', async () => {
+    const { audio, starts } = fakeAudio();
+    const comper = new Comper(audio);
+    const shownAt: number[] = [];
+    const inD = chordsInKey(findProgression('I-V-vi-IV'), 2);
+
+    // 60 bpm, so beat n after the count-in sounds at START_DELAY_S + 4 + n seconds.
+    await comper.start({
+      chords: pop,
+      bpm: 60,
+      instrument: 'piano',
+      changeKey: () => ({ chords: inD, show: () => void shownAt.push(Date.now() / 1000) })
+    });
+    vi.advanceTimersByTime(80_000);
+    comper.stop();
+
+    const changeTime = START_DELAY_S + COUNT_IN_BEATS + KEY_CHANGE_BARS * 4;
+    const bassAt = (time: number) =>
+      starts.find((s) => Math.abs(s.time - time) < 1e-9)!.note % 12;
+
+    expect(bassAt(changeTime - 16)).toBe(7);
+    expect(bassAt(changeTime)).toBe(2);
+    expect(shownAt[0]).toBeCloseTo(changeTime, 2);
+  });
+
+  it('waits for the end of a pass, so the blues moves after two choruses', async () => {
+    const { audio } = fakeAudio();
+    const comper = new Comper(audio);
+    const askedAt: number[] = [];
+
+    await comper.start({
+      chords: chordsInKey(findProgression('blues'), 0),
+      bpm: 60,
+      instrument: 'piano',
+      changeKey: () => {
+        askedAt.push(Date.now() / 1000);
+        return null;
+      }
+    });
+    vi.advanceTimersByTime(150_000);
+    comper.stop();
+
+    // Asked a beat's look-ahead before bars 24 and 36 begin.
+    const barStart = (bar: number) => START_DELAY_S + COUNT_IN_BEATS + bar * 4;
+    expect(askedAt).toHaveLength(2);
+    expect(askedAt[0]).toBeGreaterThan(barStart(24) - 0.2);
+    expect(askedAt[0]).toBeLessThanOrEqual(barStart(24));
+    expect(askedAt[1]).toBeLessThanOrEqual(barStart(36));
   });
 
   it('says so when the samples cannot be fetched', async () => {

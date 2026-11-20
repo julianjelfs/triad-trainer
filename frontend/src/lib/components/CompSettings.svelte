@@ -1,7 +1,7 @@
 <script lang="ts">
   import { PROGRESSIONS, findProgression, tonicName } from '../harmony';
   import { DOT_LABELS, STRING_SETS } from '../music';
-  import type { Comper } from '../state/comper.svelte';
+  import { KEY_CHANGE_BARS, type Comper } from '../state/comper.svelte';
   import type { Trainer } from '../state/trainer.svelte';
   import type { CompInstrument } from '../types';
   import SettingsPanel from './SettingsPanel.svelte';
@@ -15,6 +15,10 @@
     value: index,
     label: set.label.replace('Strings ', '')
   }));
+  const showOptions: { value: 'triad' | 'root'; label: string }[] = [
+    { value: 'triad', label: 'Whole triad' },
+    { value: 'root', label: 'Root only' }
+  ];
   const soundOptions: { value: CompInstrument; label: string }[] = [
     { value: 'piano', label: 'Piano' },
     { value: 'guitar', label: 'Guitar' }
@@ -36,10 +40,11 @@
     const key = keyOptions[settings.comp_key].label;
     const sound = soundOptions.find((o) => o.value === settings.comp_instrument)?.label;
     return [
-      key,
+      settings.comp_random_key ? `${key}, new key every ${KEY_CHANGE_BARS} bars` : key,
       progression.name,
       STRING_SETS[settings.comp_string_set].label,
       sound,
+      ...(settings.comp_root_only ? ['root only'] : []),
       ...(trainer.showLabels ? [] : ['blank dots'])
     ].join(' · ');
   });
@@ -65,12 +70,34 @@
       selected={[trainer.settings.comp_key]}
       onToggle={(value) => changeBacking({ comp_key: value })}
       fixedWidth
-    />
+    >
+      <button
+        type="button"
+        class="pill dice"
+        aria-pressed={trainer.settings.comp_random_key}
+        aria-label="New key every {KEY_CHANGE_BARS} bars"
+        title="New key every {KEY_CHANGE_BARS} bars"
+        onclick={() => trainer.set({ comp_random_key: !trainer.settings?.comp_random_key })}
+      >
+        <svg viewBox="0 0 16 16" aria-hidden="true">
+          <rect x="1.5" y="1.5" width="13" height="13" rx="3" />
+          <circle cx="5" cy="5" r="1.3" />
+          <circle cx="8" cy="8" r="1.3" />
+          <circle cx="11" cy="11" r="1.3" />
+        </svg>
+      </button>
+    </ToggleGroup>
     <ToggleGroup
       title="Strings"
       options={setOptions}
       selected={[trainer.settings.comp_string_set]}
       onToggle={(value) => trainer.set({ comp_string_set: value })}
+    />
+    <ToggleGroup
+      title="Show"
+      options={showOptions}
+      selected={[trainer.settings.comp_root_only ? 'root' : 'triad']}
+      onToggle={(value) => trainer.set({ comp_root_only: value === 'root' })}
     />
     <ToggleGroup
       title="Sound"
@@ -86,3 +113,25 @@
     />
   </SettingsPanel>
 {/if}
+
+<style>
+  .dice {
+    width: 48px;
+    padding: 0;
+  }
+
+  .dice svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .dice rect {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+  }
+
+  .dice circle {
+    fill: currentColor;
+  }
+</style>

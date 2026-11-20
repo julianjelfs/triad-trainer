@@ -3,6 +3,7 @@ import {
   BASS_LOW,
   CHORD_LOW,
   PROGRESSIONS,
+  randomOtherKey,
   accompanimentVoicing,
   chordsInKey,
   chordSpelling,
@@ -147,5 +148,17 @@ describe('timeline', () => {
 
   it('runs the twelve-bar blues to forty-eight beats', () => {
     expect(timeline(chordsInKey(findProgression('blues'), 9)).beats).toBe(48);
+  });
+});
+
+describe('randomOtherKey', () => {
+  it('can land on any of the other eleven keys, never the current one', () => {
+    for (let current = 0; current < 12; current++) {
+      const reached = new Set(
+        Array.from({ length: 11 }, (_, i) => randomOtherKey(current, () => (i + 0.5) / 11))
+      );
+      expect(reached.size).toBe(11);
+      expect(reached.has(current)).toBe(false);
+    }
   });
 });

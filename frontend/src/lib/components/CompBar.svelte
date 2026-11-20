@@ -1,12 +1,23 @@
 <script lang="ts">
-  import { BEATS_PER_BAR } from '../harmony';
-  import type { Comper } from '../state/comper.svelte';
+  import { BEATS_PER_BAR, chordsInKey, findProgression, randomOtherKey } from '../harmony';
+  import type { Comper, KeyChange } from '../state/comper.svelte';
   import type { Trainer } from '../state/trainer.svelte';
   import BpmStepper from './BpmStepper.svelte';
 
   let { trainer, comper }: { trainer: Trainer; comper: Comper } = $props();
 
   let bpm = $derived(trainer.settings?.comp_bpm ?? 80);
+
+  /** Read when the time comes, so the dice can be switched on or off mid-run. */
+  function changeKey(): KeyChange | null {
+    const settings = trainer.settings;
+    if (!settings?.comp_random_key) return null;
+    const key = randomOtherKey(settings.comp_key);
+    return {
+      chords: chordsInKey(findProgression(settings.comp_progression), key),
+      show: () => trainer.set({ comp_key: key })
+    };
+  }
 
   function toggle() {
     if (comper.running || comper.loading) {
@@ -16,7 +27,8 @@
     void comper.start({
       chords: trainer.compChords,
       bpm,
-      instrument: trainer.settings?.comp_instrument ?? 'piano'
+      instrument: trainer.settings?.comp_instrument ?? 'piano',
+      changeKey
     });
   }
 

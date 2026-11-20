@@ -31,6 +31,8 @@ def get_settings(conn: sqlite3.Connection) -> Settings:
         comp_string_set=int(prefs.get("comp_string_set", DEFAULTS.comp_string_set)),
         comp_instrument=prefs.get("comp_instrument", DEFAULTS.comp_instrument),
         comp_bpm=int(prefs.get("comp_bpm", DEFAULTS.comp_bpm)),
+        comp_random_key=prefs.get("comp_random_key", "0") == "1",
+        comp_root_only=prefs.get("comp_root_only", "0") == "1",
     )
 
 
@@ -50,6 +52,8 @@ def save_settings(conn: sqlite3.Connection, settings: Settings) -> Settings:
             ("comp_string_set", str(settings.comp_string_set)),
             ("comp_instrument", settings.comp_instrument),
             ("comp_bpm", str(settings.comp_bpm)),
+            ("comp_random_key", "1" if settings.comp_random_key else "0"),
+            ("comp_root_only", "1" if settings.comp_root_only else "0"),
         ],
     )
     return get_settings(conn)

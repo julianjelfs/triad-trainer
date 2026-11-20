@@ -8,9 +8,14 @@
     showLabels: boolean;
     /** Note names as the key spells them. Without it, labels use sharps. */
     spelling?: Record<ChordTone, string> | null;
+    /**
+     * Roots only, with no bands joining a shape's notes, so the 3rd and 5th
+     * have to come from memory.
+     */
+    rootOnly?: boolean;
   }
 
-  let { shapes, showLabels, spelling }: Props = $props();
+  let { shapes, showLabels, spelling, rootOnly = false }: Props = $props();
 
   /**
    * On a phone the neck stands up, nut at the top and low E on the left, the
@@ -131,6 +136,7 @@
         const key = `${guitarString(shape, i)}-${fret}`;
         if (seen.has(key)) return;
         const tone = shape.order[i];
+        if (rootOnly && tone !== "root") return;
         const p = at(dotAlong(fret), stringAcross(guitarString(shape, i)));
         seen.set(key, {
           key,
@@ -176,7 +182,7 @@
 
   {#key chordKey}
     <g class="bands">
-      {#each bands as band (band.key)}
+      {#each rootOnly ? [] : bands as band (band.key)}
         <polyline
           class="band"
           points={band.points}

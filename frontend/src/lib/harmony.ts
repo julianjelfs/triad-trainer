@@ -73,6 +73,11 @@ export const PROGRESSIONS: Progression[] = [
   { id: 'andalusian', name: 'i–VII–VI–V', tonality: 'minor', chords: [m(0), I(6), I(5), I(4)] }
 ];
 
+/** Any key but the current one, so a change is always heard. */
+export function randomOtherKey(current: number, random: () => number = Math.random): number {
+  return (current + 1 + Math.floor(random() * 11)) % 12;
+}
+
 export function findProgression(id: string): Progression {
   return PROGRESSIONS.find((progression) => progression.id === id) ?? PROGRESSIONS[0];
 }

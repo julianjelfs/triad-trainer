@@ -29,3 +29,5 @@ class Settings(BaseModel):
     comp_string_set: StringSet = 2
     comp_instrument: CompInstrument = "piano"
     comp_bpm: Bpm = 80
+    comp_random_key: bool = False
+    comp_root_only: bool = False

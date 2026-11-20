@@ -20,6 +20,11 @@ import type { CompInstrument } from '../types';
 export const COUNT_IN_BEATS = BEATS_PER_BAR;
 /** Gap between pressing Start and the first click, so it is never clipped. */
 export const START_DELAY_S = 0.1;
+/**
+ * Bars in one key before the backing may move. It only moves at the end of a
+ * pass, so the blues changes every 24 bars, after two choruses.
+ */
+export const KEY_CHANGE_BARS = 16;
 
 const LOOK_AHEAD_S = 0.1;
 const PUMP_MS = 25;
@@ -41,10 +46,22 @@ const browserAudio: ComperAudio = {
   click: (time, accented) => playClick(audioContext(), time, accented)
 };
 
+/** The progression in a new key, and what to do on the beat it starts sounding. */
+export interface KeyChange {
+  chords: KeyChord[];
+  /** Runs on the first beat in the new key, so the screen moves with the sound. */
+  show: () => void;
+}
+
 export interface CompPlan {
   chords: KeyChord[];
   bpm: number;
   instrument: CompInstrument;
+  /**
+   * Asked at the end of a pass once KEY_CHANGE_BARS have gone by in one key.
+   * Null, or leaving it out, keeps the key.
+   */
+  changeKey?: () => KeyChange | null;
 }
 
 export class Comper {
@@ -62,6 +79,11 @@ export class Comper {
   #loopBeats = 0;
   #eventsAt: CompEvent[][] = [];
   #chordAt: number[] = [];
+  /** Beat, counted after the count-in, where the current pass of the loop began. */
+  #loopStart = 0;
+  /** Beat, counted the same way, where the current key began. */
+  #keyStart = 0;
+  #changeKey: CompPlan['changeKey'];
 
   // Beat n sounds at #anchorTime + (n - #anchorBeat) × #secondsPerBeat. Only a
   // tempo change moves the anchor, so no beat inherits the rounding of the one
@@ -97,16 +119,12 @@ export class Comper {
     }
     if (session !== this.#session) return;
 
-    const { beats, events } = timeline(plan.chords);
     this.#instrument = instrument;
     this.#strum = plan.instrument === 'guitar' ? STRUM_S : 0;
-    this.#loopBeats = beats;
-    this.#eventsAt = Array.from({ length: beats }, () => []);
-    this.#chordAt = new Array(beats).fill(0);
-    for (const event of events) {
-      this.#eventsAt[event.beat].push(event);
-      if (event.kind === 'change') this.#chordAt.fill(event.chordIndex, event.beat);
-    }
+    this.#changeKey = plan.changeKey;
+    this.#loadChords(plan.chords);
+    this.#loopStart = 0;
+    this.#keyStart = 0;
 
     this.#anchorBeat = 0;
     this.#anchorTime = this.audio.context().currentTime + START_DELAY_S;
@@ -148,6 +166,32 @@ export class Comper {
     this.#secondsPerBeat = secondsPerBeat;
   }
 
+  #loadChords(chords: KeyChord[]) {
+    const { beats, events } = timeline(chords);
+    this.#loopBeats = beats;
+    this.#eventsAt = Array.from({ length: beats }, () => []);
+    this.#chordAt = new Array(beats).fill(0);
+    for (const event of events) {
+      this.#eventsAt[event.beat].push(event);
+      if (event.kind === 'change') this.#chordAt.fill(event.chordIndex, event.beat);
+    }
+  }
+
+  /** At the end of a pass that has been in one key long enough, maybe move. */
+  #maybeChangeKey(played: number): KeyChange | null {
+    const passDone = played > this.#loopStart && (played - this.#loopStart) % this.#loopBeats === 0;
+    if (!passDone) return null;
+    this.#loopStart = played;
+    if (played - this.#keyStart < KEY_CHANGE_BARS * BEATS_PER_BAR) return null;
+
+    const change = this.#changeKey?.() ?? null;
+    if (change) {
+      this.#loadChords(change.chords);
+      this.#keyStart = played;
+    }
+    return change;
+  }
+
   #timeOf(beat: number): number {
     return this.#anchorTime + (beat - this.#anchorBeat) * this.#secondsPerBeat;
   }
@@ -171,7 +215,8 @@ export class Comper {
     }
 
     const played = beat - COUNT_IN_BEATS;
-    const loopBeat = played % this.#loopBeats;
+    const keyChange = this.#maybeChangeKey(played);
+    const loopBeat = (played - this.#loopStart) % this.#loopBeats;
     const duration = (beats: number) => beats * this.#secondsPerBeat;
 
     for (const event of this.#eventsAt[loopBeat]) {
@@ -196,6 +241,7 @@ export class Comper {
 
     const chordIndex = this.#chordAt[loopBeat];
     this.#at(time, () => {
+      keyChange?.show();
       this.countingIn = false;
       this.beat = loopBeat % BEATS_PER_BAR;
       this.chordIndex = chordIndex;

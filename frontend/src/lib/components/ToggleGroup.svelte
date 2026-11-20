@@ -1,4 +1,5 @@
 <script lang="ts" generics="T extends string | number">
+  import type { Snippet } from 'svelte';
   import ToggleButton from './ToggleButton.svelte';
 
   interface Option {
@@ -13,9 +14,11 @@
     onToggle: (value: T, on: boolean) => void;
     /** Equal widths, for rows of short labels like the twelve keys. */
     fixedWidth?: boolean;
+    /** A control that belongs with the row, drawn after its options. */
+    children?: Snippet;
   }
 
-  let { title, options, selected, onToggle, fixedWidth = false }: Props = $props();
+  let { title, options, selected, onToggle, fixedWidth = false, children }: Props = $props();
 </script>
 
 <div class="group" role="group" aria-label={title}>
@@ -29,6 +32,7 @@
         {fixedWidth}
       />
     {/each}
+    {@render children?.()}
   </div>
 </div>
 

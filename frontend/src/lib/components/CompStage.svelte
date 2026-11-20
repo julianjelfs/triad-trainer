@@ -59,7 +59,12 @@
   </ol>
 
   <section class="card" aria-label="Every shape of the sounding chord">
-    <Fretboard {shapes} showLabels={trainer.showLabels} spelling={current.spelling} />
+    <Fretboard
+      {shapes}
+      showLabels={trainer.showLabels}
+      spelling={current.spelling}
+      rootOnly={trainer.settings?.comp_root_only ?? false}
+    />
   </section>
 
   {#if comper.error}
