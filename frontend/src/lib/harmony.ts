@@ -56,6 +56,7 @@ const m = (degree: number, bars = 1): ProgressionChord => ({ degree, quality: 'm
 
 export const PROGRESSIONS: Progression[] = [
   { id: 'I-V-vi-IV', name: 'I–V–vi–IV', tonality: 'major', chords: [I(0), I(4), m(5), I(3)] },
+  { id: 'I', name: 'I vamp', tonality: 'major', chords: [I(0, 4)] },
   { id: 'I-IV', name: 'I–IV vamp', tonality: 'major', chords: [I(0, 2), I(3, 2)] },
   { id: 'I-vi-IV-V', name: 'I–vi–IV–V', tonality: 'major', chords: [I(0), m(5), I(3), I(4)] },
   { id: 'vi-IV-I-V', name: 'vi–IV–I–V', tonality: 'major', chords: [m(5), I(3), I(0), I(4)] },
